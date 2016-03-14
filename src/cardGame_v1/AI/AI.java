@@ -12,6 +12,7 @@ import cardGame_v1.Controller.Player;
 import cardGame_v1.Model.Creature;
 import cardGame_v1.Model.Deck;
 import cardGame_v1.Model.UserProfile;
+
 /**
  * 
  * @author :^)
@@ -106,11 +107,7 @@ public class AI extends Player {
 	 * @return an array containing the string arrays for best turn
 	 */
 	public Play findBestTurn(ArrayList<Play> possibleMoves){
-//		//set up arrays for taking the turn
-//		String[] label_position_sideSelectionOne = new String[2];
-//		String[] label_position_sideSelectionTwo = new String[2];
-//		String[][] bestMoveArray = {label_position_sideSelectionOne, label_position_sideSelectionTwo};
-		
+
 		double HighestValue = 0.0;
 		Play bestMove = null;
 		
