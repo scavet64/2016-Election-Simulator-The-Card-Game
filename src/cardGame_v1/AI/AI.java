@@ -12,7 +12,11 @@ import cardGame_v1.Controller.Player;
 import cardGame_v1.Model.Creature;
 import cardGame_v1.Model.Deck;
 import cardGame_v1.Model.UserProfile;
-
+/**
+ * 
+ * @author :^)
+ *
+ */
 public class AI extends Player {
 	private Game game;
 	private final String TEMP_GAME_FILE_NAME = "tempGame.ser";
