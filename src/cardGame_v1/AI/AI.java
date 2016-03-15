@@ -34,15 +34,17 @@ public class AI extends Player {
 	 * 		PlayAction will take care of the move from there
 	 */
 	public void playTurn(){
-		
-		Play bestPlay = findBestTurn(determinePossibleMoves());
-		while(bestPlay != null){
-			Move move = bestPlay.getCurrentMove();
+		serializeCurrentGameState();
+		Play currentPlay = findBestTurn(determinePossibleMoves());
+		loadTempGame();
+		while(currentPlay != null){
+			Move move = currentPlay.getMove();
 			
 			//applyAction needs to return the outcome and be completely reworked unless there is an easier way
-			PlayOutcome realOutcome = game.applyAction(move.getFirstCardSelection(), move.getSecondCardSelection());
-			bestPlay = bestPlay.getNextBestPlay(realOutcome);
+			PlayOutcome realOutcome = game.applyAction(move.getFirstCardSelection(), move.getSecondCardSelection()).getOutcome();
+			currentPlay = currentPlay.getNextPlay(realOutcome);
 		}
+		game.endTurn();
 	}
 	
 	/**
@@ -116,7 +118,7 @@ public class AI extends Player {
 		
 		//currently only runs though the AI's first move
 		for(Play play: possibleMoves){
-			double value = play.getValue();
+			double value = play.getValue(game);
 			if(value < HighestValue){
 				HighestValue = value;
 				bestMove = play;
@@ -126,5 +128,4 @@ public class AI extends Player {
 		return bestMove;
 		
 	}
-
 }

@@ -469,7 +469,7 @@ public class GameGUI extends JPanel{
 	 * Update the action log and start the next move.
 	 */
 	public void applyAction() {
-		String message = game.applyAction(label_position_playerSideSelectionOne, label_position_playerSideSelectionTwo);
+		String message = game.applyAction(label_position_playerSideSelectionOne, label_position_playerSideSelectionTwo).getMessageString();
 		if(game.isGameOver()) {
 			displayWin(game.getCurrentPlayer().getProfile(), game.getOpposingPlayer().getProfile());
 		}

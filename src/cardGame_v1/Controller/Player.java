@@ -11,6 +11,8 @@ import java.util.Random;
 
 import javax.imageio.ImageIO;
 
+import cardGame_v1.AI.ApplyActionOutcome;
+import cardGame_v1.AI.PlayOutcome;
 import cardGame_v1.Model.Card;
 import cardGame_v1.Model.Creature;
 import cardGame_v1.Model.Enhanceable;
@@ -32,8 +34,8 @@ public class Player {
 	
 	//final variables
 	private final Random RNG = new Random();
-	private final static int MAX_HAND_SIZE = 5;
-	private final static int MAX_FIELD_SIZE = 5;
+	public final static int MAX_HAND_SIZE = 5;
+	public final static int MAX_FIELD_SIZE = 5;
 	private final String NO_SPACE_ERROR = "There is no room to play that creature\n";
 	private final String CARD_NOT_IN_HAND = "You do not have that card in your hand\n";
 	private final String HAND_TOO_FULL = "Your hand is full!\n";
@@ -179,16 +181,16 @@ public class Player {
 	 * @param takesFatigue True to apply fatigue, false if not
 	 * @return message
 	 */
-	public String attack(Creature attackingCard, Integer playerSide, Integer fieldLocation, boolean takesFatigue) {
+	public ApplyActionOutcome attack(Creature attackingCard, Integer playerSide, Integer fieldLocation, boolean takesFatigue) {
 		if(isCardAtLocation(playerSide, fieldLocation)) {
 			if (takesFatigue && !canAttack(attackingCard)) {
-				return FATIGUED;
+				return new ApplyActionOutcome(FATIGUED, PlayOutcome.NA);
 			}
 			if(takesFatigue){
 				fatigueForCurrentTurn += attackingCard.getAttackFatigueValue();
 			}
 			if(attackMissed(attackingCard)){
-				return ATTACK_MISSED;
+				return new ApplyActionOutcome(ATTACK_MISSED, PlayOutcome.M);
 			}else {
 				Creature creatureToBeAttacked = field.get(playerSide).get(fieldLocation);
 				// Apply damage to attacked card
@@ -198,13 +200,13 @@ public class Player {
 				if(creatureToBeAttacked.getHealthValue() <= 0){
 					//The creature is dead therefore is removed from its location
 					field.get(playerSide).remove(fieldLocation);
-					return creatureToBeAttacked.getName() + " was killed\n";
+					return new ApplyActionOutcome((creatureToBeAttacked.getName() + " was killed\n"), PlayOutcome.H);
 				} else {
-					return creatureToBeAttacked.getName() + " was attacked for " + attackValue + "\n";
+					return new ApplyActionOutcome((creatureToBeAttacked.getName() + " was attacked for " + attackValue + "\n"), PlayOutcome.H);
 				}
 			}
 		}else {
-			return NO_CARD_AT_LOCATION_ERROR;
+			return new ApplyActionOutcome(NO_CARD_AT_LOCATION_ERROR, PlayOutcome.NA);
 		}
 	}
 
@@ -214,19 +216,20 @@ public class Player {
 	 * @param playerToAttack The Player to attack
 	 * @return message
 	 */
-	public String attack(Creature attackingCard, Player playerToAttack) {
+	public ApplyActionOutcome attack(Creature attackingCard, Player playerToAttack) {
 		if (!canAttack(attackingCard)) {
-			return FATIGUED;
+			return new ApplyActionOutcome(FATIGUED, PlayOutcome.NA);
 		}
 		if(field.get(playerToAttack.getPlayerSide()).size() > 0) {
-			return CREATURES_ON_FIELD;
+			return new ApplyActionOutcome(CREATURES_ON_FIELD, PlayOutcome.NA);
 		}else {
 			fatigueForCurrentTurn += attackingCard.getAttackFatigueValue();
 			if(attackMissed(attackingCard)){
-				return ATTACK_MISSED;
+				return new ApplyActionOutcome(ATTACK_MISSED, PlayOutcome.M);
 			}else {
 				playerToAttack.setHealthPoints(playerToAttack.getHealthPoints() - attackingCard.getAttackValue());
-				return playerToAttack.getProfile().getName() + " attacked for " + attackingCard.getAttackValue() + "\n";
+				return new ApplyActionOutcome((playerToAttack.getProfile().getName() + " attacked for " + attackingCard.getAttackValue() + "\n"), 
+						                      PlayOutcome.H);
 			}
 		}
 	}
@@ -236,7 +239,7 @@ public class Player {
 	 * @param attackingCard Creature to check fatigue
 	 * @return true if Creature can attack, false if not
 	 */
-	private boolean canAttack(Creature attackingCard) {
+	public boolean canAttack(Creature attackingCard) {
 		if((attackingCard.getAttackFatigueValue() + fatigueForCurrentTurn) <= maxFatigueForCurrentTurn) {
 			return true;
 		} else {
@@ -295,7 +298,7 @@ public class Player {
 	 * @param card Card to determine if can be played
 	 * @return true if CArd can be played, false if not
 	 */
-	private boolean canPlay(Card card) {
+	public boolean canPlay(Card card) {
 		if((card.getPlayFatigueValue() + fatigueForCurrentTurn) <= maxFatigueForCurrentTurn) {
 			return true;
 		} else {
@@ -439,6 +442,23 @@ public class Player {
 			e.printStackTrace();
 			return null;
 		}
+	}
+	
+	public boolean isFieldFull() {
+		return field.get(playerSide).size() == MAX_FIELD_SIZE;
+	}
+	
+	public boolean isFieldEmpty() {
+		return field.get(playerSide).size() == 0;
+	}
+
+	public String getPlayerStringSide() {
+		if(playerSide == 1) return "south"; //:^)
+		/******/else/*****/	return "north"; 
+	}
+
+	public HashMap<Integer, HashMap<Integer, Creature>> getField() {
+		return field;
 	}
 		
 //	//If drawing is going to be an option to the player

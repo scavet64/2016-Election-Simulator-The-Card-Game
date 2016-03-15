@@ -1,60 +1,59 @@
 package cardGame_v1.AI;
 
-import java.util.Collection;
+import cardGame_v1.Controller.Game;
 
 public class BranchingPlay {
 	private Move move;
 	private PlayOutcome playOutcome;
-	private double gameStateValue;
-	private Collection<Play> listOfNextPlays;
-	private double chanceToOccur;
-	
-	public BranchingPlay(){
-	}
-	
-	
+	private Double weightedValue;
+	private Play nextPlay;
+	private int chanceToOccur;
 
-	/**
-	 * @return the move
-	 */
-	public Move getMove() {
-		return move;
-	}
-
-	/**
-	 * @param move the move to set
-	 */
-	public void setMove(Move move) {
+	public BranchingPlay(PlayOutcome playOutcome, int chanceToOccur, Move move){
+		this.playOutcome = playOutcome;
+		this.chanceToOccur = chanceToOccur;
 		this.move = move;
 	}
 
 	/**
 	 * @return the gameStateValue
 	 */
-	public double getGameStateValue() {
-		return gameStateValue;
+	public double getWeightedValue(Game game) {
+		double result = 0;
+		if(weightedValue == null) {
+			if(nextPlay == null) {
+				PlayFinderUtility.serializeCurrentGameState(game);
+				//TODO apply this branch to the gamestate
+
+				nextPlay = PlayFinderUtility.findPlay(game);
+				if(PlayFinderUtility.valueFlag == PlayFinderUtility.MAX) {
+					PlayFinderUtility.setValueFlag(PlayFinderUtility.MIN);
+					game.endTurn();
+					result = PlayFinderUtility.findPlay(game).getValue(game);
+					PlayFinderUtility.setValueFlag(PlayFinderUtility.MAX);
+					if(nextPlay != null && result > nextPlay.getValue(game)) {
+						nextPlay = null;
+					}
+				}else {
+					result = PlayFinderUtility.gameStateEvaluation(game);
+					if(nextPlay != null && result < nextPlay.getValue(game)) {
+						nextPlay = null;
+					}
+				}
+				PlayFinderUtility.loadTempGame();
+			}
+			if(nextPlay != null) {
+				result = nextPlay.getValue(game);
+			}
+			result *= chanceToOccur;
+			weightedValue = result;
+		}else {
+			result = weightedValue;
+		}
+		return result;
 	}
 
-	/**
-	 * @param gameStateValue the gameStateValue to set
-	 */
-	public void setGameStateValue(double gameStateValue) {
-		this.gameStateValue = gameStateValue;
+	public Play getNextPlay() {
+		return nextPlay;
 	}
-
-	/**
-	 * @return the listOfNextPlays
-	 */
-	public Collection<Play> getListOfNextPlays() {
-		return listOfNextPlays;
-	}
-
-	/**
-	 * @param listOfNextPlays the listOfNextPlays to set
-	 */
-	public void setListOfNextPlays(Collection<Play> listOfNextPlays) {
-		this.listOfNextPlays = listOfNextPlays;
-	}
-	
-	
 }

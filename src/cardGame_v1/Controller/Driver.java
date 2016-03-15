@@ -1,8 +1,14 @@
 package cardGame_v1.Controller;
 
+import java.util.ArrayList;
+import java.util.Random;
+
+import cardGame_v1.ExceptionHandling.DeckFullException;
 import cardGame_v1.GUI.MainGUI;
 import cardGame_v1.Model.AllCards;
 import cardGame_v1.Model.Card;
+import cardGame_v1.Model.Deck;
+import cardGame_v1.Model.UserProfile;
 
 public class Driver {
 
@@ -11,6 +17,7 @@ public class Driver {
 		Menu menu = new Menu();
 		AllCards.getInstance();
 		createMasterProfile(menu);
+		createAIProfile(menu);
 		MainGUI menuGUI = new MainGUI(menu);
 	}
 
@@ -21,6 +28,30 @@ public class Driver {
 			menu.getActiveProfile().addCard(card);
 			menu.getActiveProfile().addCard(card);
 		}
+		menu.saveActiveProfile();
+	}
+	
+	private static void createAIProfile(Menu menu){
+		Random rng = new Random();
+		menu.createProfile("aiPlayer");
+		UserProfile aiProfile = menu.getActiveProfile();
+		ArrayList<Card> allCards = AllCards.getInstance().getAllCards();
+		for(Card card: allCards){
+			aiProfile.addCard(card);
+			aiProfile.addCard(card);
+		}
+		Deck aiDeck = aiProfile.getDeck();
+		int totalCardsInGame = allCards.size();
+		boolean isFinished = false;
+		while(!isFinished){
+			try {
+				aiDeck.addCard(allCards.get(rng.nextInt(totalCardsInGame-1)));
+			} catch (DeckFullException e) {
+				// TODO Auto-generated catch block
+				isFinished = true;
+			}
+		}
+		
 		menu.saveActiveProfile();
 	}
 	

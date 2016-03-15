@@ -183,7 +183,18 @@ public class MainGUI  extends JFrame{
 				JButton button = (JButton) event.getSource();
 				switch(button.getText()){
 
-				case "Play Game":
+				case "Single Player":
+					try{
+						mainPanel.remove(menuPanel);
+						initializePlayGUI(menu.loadProfile("aiPlayer"), Game.AI_GAME);
+					
+					}catch(ProfileNotFoundException | ClassNotFoundException e){
+						errorLabel.setText("That profile does not exist!");
+					}
+					break;
+					
+					
+				case "Multiplayer":
 					if(!menu.getActiveProfile().getDeck().isFull()) {
 						JOptionPane.showMessageDialog(null, "You cannot start a game without a full deck!", "Unfinished Deck", JOptionPane.WARNING_MESSAGE);
 						mainPanel.updateUI();
@@ -229,6 +240,7 @@ public class MainGUI  extends JFrame{
 		menuPanel.getSaveButton().addActionListener(myButtonListener);
 		menuPanel.getChangeProfileButton().addActionListener(myButtonListener);
 		menuPanel.getQuitButton().addActionListener(myButtonListener);
+		menuPanel.getPlayAI().addActionListener(myButtonListener);
 		mainPanel.add(menuPanel, BorderLayout.CENTER);			
 		mainPanel.updateUI();
 		if(menu.getActiveProfile().isFirstLoad()){
@@ -304,7 +316,7 @@ public class MainGUI  extends JFrame{
 							return;
 						}else if(((JButton) event.getSource()).getText().equals(startGame.getStartGameButton().getText())) {
 							mainPanel.remove(startGame);
-							initializePlayGUI(oppsingPlayer);
+							initializePlayGUI(oppsingPlayer, Game.MULTIPLAYER_GAME);
 						}
 					}catch(ProfileNotFoundException | ClassNotFoundException e){
 						errorLabel.setText("That profile does not exist!");
@@ -331,7 +343,7 @@ public class MainGUI  extends JFrame{
 	 * initialize the Game gui
 	 * @param opposingPlayer player to be active player's opponent
 	 */
-	private void initializePlayGUI(UserProfile opposingPlayer){
+	private void initializePlayGUI(UserProfile opposingPlayer,  boolean isMultiplayer){
 		topLabel.setText("");
 		setLocation(0, 0);
 		setSize(new Dimension(1910,1050));
@@ -339,7 +351,7 @@ public class MainGUI  extends JFrame{
 		errorLabel.setText(" ");
 
 		//Adds the gui to the center
-		Game game = new Game(menu.getActiveProfile(), opposingPlayer, Game.MULTIPLAYER_GAME);
+		Game game = new Game(menu.getActiveProfile(), opposingPlayer, isMultiplayer);
 		activeCenterPanel = new GameGUI(game, this);
 		mainPanel.add(activeCenterPanel);
 		mainPanel.updateUI();

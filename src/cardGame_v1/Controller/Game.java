@@ -7,6 +7,9 @@ import java.io.ObjectOutputStream;
 import java.util.HashMap;
 
 import cardGame_v1.AI.AI;
+import cardGame_v1.AI.ApplyActionOutcome;
+import cardGame_v1.AI.Play;
+import cardGame_v1.AI.PlayOutcome;
 import cardGame_v1.Model.Card;
 import cardGame_v1.Model.Creature;
 import cardGame_v1.Model.Deck;
@@ -150,7 +153,7 @@ public class Game {
 	 * @param label_position_sideSelectionTwo The second position selection
 	 * @return The message concatenated from all applied actions
 	 */
-	public String applyAction(String[] label_position_sideSelectionOne, String[] label_position_sideSelectionTwo) {	
+	public ApplyActionOutcome applyAction(String[] label_position_sideSelectionOne, String[] label_position_sideSelectionTwo) {	
 		int position = Integer.parseInt(label_position_sideSelectionTwo[1]);
 		Card actionCard;
 		switch(label_position_sideSelectionOne[0]) {
@@ -159,10 +162,10 @@ public class Game {
 					 							Integer.parseInt(label_position_sideSelectionOne[1]));
 			if(label_position_sideSelectionTwo[0].equals("player")) {
 				// Attack the Player
-				String message = (getCurrentPlayer().attack((Creature) actionCard, getOpposingPlayer()));
+				ApplyActionOutcome message = (getCurrentPlayer().attack((Creature) actionCard, getOpposingPlayer()));
 				if(getOpposingPlayer().getHealthPoints() <= 0) {
 					gameOver();
-					return "";
+					return new ApplyActionOutcome("", PlayOutcome.H);
 				}
 				return message;
 			}else {
@@ -170,19 +173,30 @@ public class Game {
 				int attackingCardPosition = Integer.parseInt(label_position_sideSelectionOne[1]);
 				Creature creatureToAttack = getCreatureAtPosition(opponentsSide, position);
 				// Attack the Creature
-				String message = (getCurrentPlayer().attack((Creature) actionCard, opponentsSide, position, Player.WITH_FATIGUE));
-				if(message.equals(Player.FATIGUED)){
+				ApplyActionOutcome message = (getCurrentPlayer().attack((Creature) actionCard, opponentsSide, position, Player.WITH_FATIGUE));
+				if(message.getMessageString().equals(Player.FATIGUED)){
 					// No attack
 				}else {
-					if(!message.equals(Player.ATTACK_MISSED)) {
-						message += ((Creature) actionCard).getType().modifierString(creatureToAttack.getType());
+					if(message.getOutcome() == PlayOutcome.H) {
+						message.setMessageString(message.getMessageString() + ((Creature) actionCard).getType().modifierString(creatureToAttack.getType()));
 					}
 					// Creature attacks back
-					String attackBackMessage = (getOpposingPlayer().attack(creatureToAttack, getCurrentPlayer().getPlayerSide(), attackingCardPosition, Player.NO_FATIGUE));
-					if(!attackBackMessage.equals(Player.ATTACK_MISSED)) {
-						attackBackMessage += (creatureToAttack).getType().modifierString(((Creature) actionCard).getType());
+					ApplyActionOutcome attackBackMessage = (getOpposingPlayer().attack(creatureToAttack, getCurrentPlayer().getPlayerSide(), attackingCardPosition, Player.NO_FATIGUE));
+					if(attackBackMessage.getOutcome() == PlayOutcome.H) {
+						attackBackMessage.setMessageString(attackBackMessage.getMessageString() + (creatureToAttack).getType().modifierString(((Creature) actionCard).getType()));
+						if(message.getOutcome() == PlayOutcome.H) {
+							message.setOutcome(PlayOutcome.HH);
+						}else {
+							message.setOutcome(PlayOutcome.MH);
+						}
+					}else {
+						if(message.getOutcome() == PlayOutcome.H) {
+							message.setOutcome(PlayOutcome.HM);
+						}else {
+							message.setOutcome(PlayOutcome.MM);
+						}
 					}
-					message += attackBackMessage;
+					message.setMessageString(message.getMessageString() + attackBackMessage.getMessageString());
 				}
 				return message;
 			}
@@ -191,13 +205,13 @@ public class Game {
 			if((getCurrentPlayerTurn() == 1 && label_position_sideSelectionTwo[2].equals("north")) ||
 				getCurrentPlayerTurn() == 2 && label_position_sideSelectionTwo[2].equals("south")) {
 				//Enhance opposing player's card
-				return (getCurrentPlayer().playCard(actionCard, getOpposingPlayer().getPlayerSide(), position));
+				return new ApplyActionOutcome(getCurrentPlayer().playCard(actionCard, getOpposingPlayer().getPlayerSide(), position), PlayOutcome.NA);
 			}else {
 			// Play the Card or enhance own card
-			return (getCurrentPlayer().playCard(actionCard, getCurrentPlayer().getPlayerSide(), position));
+			return new ApplyActionOutcome(getCurrentPlayer().playCard(actionCard, getCurrentPlayer().getPlayerSide(), position), PlayOutcome.NA);
 			}
 		}
-		return "error";
+		return new ApplyActionOutcome("error", PlayOutcome.NA);
 	}
 
 	/**

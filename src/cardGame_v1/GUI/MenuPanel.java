@@ -22,7 +22,7 @@ public class MenuPanel extends JPanel {
 	
 	// Buttons
 	private JButton playButton, editButton, storeButton, 
-	        saveButton, changeProfileButton, quitButton;
+	        saveButton, changeProfileButton, quitButton, playAI;
 
 	/**
 	 * Constructor for the menuPanel
@@ -47,11 +47,17 @@ public class MenuPanel extends JPanel {
 		statPanel.setOpaque(false);
 
 		//create buttons
-		playButton = new JButton("Play Game");
+		playButton = new JButton("Multiplayer");
 		playButton.setAlignmentX(Component.CENTER_ALIGNMENT);
 		playButton.setHorizontalAlignment(SwingConstants.CENTER);
 		playButton.setMinimumSize(BUTTON_SIZE);
 		playButton.setMaximumSize(BUTTON_SIZE);
+		
+		playAI = new JButton("Single Player");
+		playAI.setAlignmentX(Component.CENTER_ALIGNMENT);
+		playAI.setHorizontalAlignment(SwingConstants.CENTER);
+		playAI.setMinimumSize(BUTTON_SIZE);
+		playAI.setMaximumSize(BUTTON_SIZE);
 
 		editButton = new JButton("Edit Deck");
 		editButton.setAlignmentX(Component.CENTER_ALIGNMENT);
@@ -87,6 +93,8 @@ public class MenuPanel extends JPanel {
 		add(Box.createVerticalGlue());
 		add(Box.createHorizontalGlue());
 		add(welcomeLabel);
+		add(Box.createRigidArea(new Dimension(0, 2)));
+		add(playAI);
 		add(Box.createRigidArea(new Dimension(0, 2)));
 		add(playButton);
 		add(Box.createRigidArea(new Dimension(0, 2)));
@@ -157,4 +165,20 @@ public class MenuPanel extends JPanel {
 	public JButton getQuitButton() {
 		return quitButton;
 	}
+
+	/**
+	 * @return the playAI
+	 */
+	public JButton getPlayAI() {
+		return playAI;
+	}
+
+	/**
+	 * @param playAI the playAI to set
+	 */
+	public void setPlayAI(JButton playAI) {
+		this.playAI = playAI;
+	}
+	
+	
 }

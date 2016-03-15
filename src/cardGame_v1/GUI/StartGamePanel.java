@@ -22,7 +22,7 @@ public class StartGamePanel extends JPanel {
 	private static final long serialVersionUID = 1L;
 	private JLabel challengerLabel, adversaryLabel;
 	private JTextField oppenentTextField;
-	private JButton enterButton, startGameButton, backButton;
+	private JButton enterButton, startGameButton, backButton, playAI;
 	private StatPanel challengerStatPanel, adversaryStatPanel;
 	private JPanel adversaryPanel;
 	
