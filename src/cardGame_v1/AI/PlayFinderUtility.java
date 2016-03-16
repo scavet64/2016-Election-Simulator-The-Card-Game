@@ -35,6 +35,55 @@ public class PlayFinderUtility {
 		}
 		return didSave;
 	}
+	
+	/**
+	 * Returns the chance of occurrence for the passed in move and playoutcome.
+	 * 
+	 * @param po The PlayOutcome you want the chance of occurring
+	 * @param move The move to examine
+	 * @return total chance of outcome
+	 */
+	public int getChanceToOccur(PlayOutcome po, Move move){
+		int chanceToOccur = 0;
+		int attackingCTH = 1;
+		int defendingCTH = 1;
+		
+		int attackingPosition = Integer.parseInt(move.getFirstCardSelection()[1]);
+		int attackingSide = game.getCurrentPlayer().getPlayerSide();
+		Creature attackingCreature = game.getCreatureAtPosition(attackingSide, attackingPosition);
+		attackingCTH = attackingCreature.getChanceToHit();
+		
+		if(!po.equals(PlayOutcome.H) || !po.equals(PlayOutcome.M)){
+			int defendingPosition = Integer.parseInt(move.getSecondCardSelection()[1]);
+			int defendingSide = game.getOpposingPlayer().getPlayerSide();
+			Creature defendingCreature = game.getCreatureAtPosition(defendingSide, defendingPosition);
+			defendingCTH = defendingCreature.getChanceToHit();
+		}
+		
+		switch(po){
+		case HH:
+			chanceToOccur = attackingCTH * defendingCTH;
+			break;
+		case HM:
+			chanceToOccur = attackingCTH * (100 - defendingCTH);
+			break;
+		case MH:
+			chanceToOccur = (100 - attackingCTH) * defendingCTH;
+			break;
+		case MM:
+			chanceToOccur = (100 - attackingCTH) * (100 - defendingCTH);
+			break;
+		case H:
+			chanceToOccur = attackingCTH;
+			break;
+		case M:
+			chanceToOccur = 100 - attackingCTH;
+		default:
+			break;			
+		}
+		
+		return chanceToOccur;
+	}
 
 	/**
 	 * Reload the saved game back into memory.
@@ -182,6 +231,12 @@ public class PlayFinderUtility {
 		valueFlag = flag;
 	}
 
+	/**
+	 * Evaluates the current Gamestate using the passed in game object.
+	 * Compares player and AI health to determine how the move fairs.
+	 * @param gameToEvaluate
+	 * @return
+	 */
 	public static double gameStateEvaluation(Game gameToEvaluate) {
 		
 		Player player = gameToEvaluate.getCurrentPlayer();
