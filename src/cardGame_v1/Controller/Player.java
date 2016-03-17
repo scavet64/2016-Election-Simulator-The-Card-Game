@@ -3,6 +3,7 @@ package cardGame_v1.Controller;
 import java.awt.Image;
 import java.io.File;
 import java.io.IOException;
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -22,7 +23,7 @@ import cardGame_v1.Model.RareCreature;
 import cardGame_v1.Model.Type;
 import cardGame_v1.Model.UserProfile;
 
-public class Player {
+public class Player implements Serializable{
 	private Integer playerSide;
 	private UserProfile profile;
 	private int fatigueForCurrentTurn; 							//actions the player has done: AKA action counter
@@ -76,7 +77,7 @@ public class Player {
 			System.out.println("PLAYER: entered drawcard");
 			handOfCards.add(profile.getDeck().getTopCard());
 			if(isJackHere()) {
-				System.out.println("PLAYER: entered if jackhere");
+				//System.out.println("PLAYER: entered if jackhere");
 				combineJack();
 				return JACK_FTW;
 			}else {
@@ -94,16 +95,16 @@ public class Player {
 	 * @return true if all five cards of Jack are present in Player's hand, false if not
 	 */
 	private boolean isJackHere(){
-		System.out.println("PLAYER: entered isJackHere");
+		//System.out.println("PLAYER: entered isJackHere");
 		HashSet<Integer> jackSet = new HashSet<Integer>();
 		for(Card card: handOfCards){
 			if(card instanceof JackCard){
 				JackCard jackCard = (JackCard) card;
-				System.out.println(jackCard.getPieceNumber());
+				//System.out.println(jackCard.getPieceNumber());
 				jackSet.add(jackCard.getPieceNumber());
 			}
 		}
-		System.out.println(jackSet.size());
+		//System.out.println(jackSet.size());
 		if(jackSet.size() == 5){
 			return true;
 		} else {
@@ -173,6 +174,43 @@ public class Player {
 		}	
 	}
 
+//	/**
+//	 * Use the given Creature to attack the given position. Apply fatigue if specified.
+//	 * @param attackingCard The Creature attacking
+//	 * @param playerSide The Player's side of the field to attack
+//	 * @param fieldLocation The location on the field to attack
+//	 * @param takesFatigue True to apply fatigue, false if not
+//	 * @return message
+//	 */
+//	public ApplyActionOutcome attack(Creature attackingCard, Integer playerSide, Integer fieldLocation, boolean takesFatigue, boolean forceHit, boolean forceMiss) {
+//		if(isCardAtLocation(playerSide, fieldLocation)) {
+//			if (takesFatigue && !canAttack(attackingCard)) {
+//				return new ApplyActionOutcome(FATIGUED, PlayOutcome.NA);
+//			}
+//			if(takesFatigue){
+//				fatigueForCurrentTurn += attackingCard.getAttackFatigueValue();
+//			}
+//			if((!forceHit && attackMissed(attackingCard)) || forceMiss){
+//				return new ApplyActionOutcome(ATTACK_MISSED, PlayOutcome.M);
+//			}else {
+//				Creature creatureToBeAttacked = field.get(playerSide).get(fieldLocation);
+//				// Apply damage to attacked card
+//				int attackValue = attackingCard.getAttackValue() + attackingCard.getType().applyModifier(creatureToBeAttacked.getType());
+//				creatureToBeAttacked.setHealthValue(creatureToBeAttacked.getHealthValue() - attackValue);
+//				// Check if creatures died
+//				if(creatureToBeAttacked.getHealthValue() <= 0){
+//					//The creature is dead therefore is removed from its location
+//					field.get(playerSide).remove(fieldLocation);
+//					return new ApplyActionOutcome((creatureToBeAttacked.getName() + " was killed\n"), PlayOutcome.H);
+//				} else {
+//					return new ApplyActionOutcome((creatureToBeAttacked.getName() + " was attacked for " + attackValue + "\n"), PlayOutcome.H);
+//				}
+//			}
+//		}else {
+//			return new ApplyActionOutcome(NO_CARD_AT_LOCATION_ERROR, PlayOutcome.NA);
+//		}
+//	}
+	
 	/**
 	 * Use the given Creature to attack the given position. Apply fatigue if specified.
 	 * @param attackingCard The Creature attacking
@@ -181,7 +219,7 @@ public class Player {
 	 * @param takesFatigue True to apply fatigue, false if not
 	 * @return message
 	 */
-	public ApplyActionOutcome attack(Creature attackingCard, Integer playerSide, Integer fieldLocation, boolean takesFatigue) {
+	public ApplyActionOutcome attack(Creature attackingCard, Integer playerSide, Integer fieldLocation, boolean takesFatigue, PlayOutcome po) {
 		if(isCardAtLocation(playerSide, fieldLocation)) {
 			if (takesFatigue && !canAttack(attackingCard)) {
 				return new ApplyActionOutcome(FATIGUED, PlayOutcome.NA);
@@ -189,9 +227,9 @@ public class Player {
 			if(takesFatigue){
 				fatigueForCurrentTurn += attackingCard.getAttackFatigueValue();
 			}
-			if(attackMissed(attackingCard)){
-				return new ApplyActionOutcome(ATTACK_MISSED, PlayOutcome.M);
-			}else {
+				if(attackMissed(attackingCard) && po.equals(PlayOutcome.NA) || po.equals(PlayOutcome.M)){
+					return new ApplyActionOutcome(ATTACK_MISSED, PlayOutcome.M);
+				}else {
 				Creature creatureToBeAttacked = field.get(playerSide).get(fieldLocation);
 				// Apply damage to attacked card
 				int attackValue = attackingCard.getAttackValue() + attackingCard.getType().applyModifier(creatureToBeAttacked.getType());
@@ -216,7 +254,7 @@ public class Player {
 	 * @param playerToAttack The Player to attack
 	 * @return message
 	 */
-	public ApplyActionOutcome attack(Creature attackingCard, Player playerToAttack) {
+	public ApplyActionOutcome attack(Creature attackingCard, Player playerToAttack, PlayOutcome po) {
 		if (!canAttack(attackingCard)) {
 			return new ApplyActionOutcome(FATIGUED, PlayOutcome.NA);
 		}
@@ -224,7 +262,7 @@ public class Player {
 			return new ApplyActionOutcome(CREATURES_ON_FIELD, PlayOutcome.NA);
 		}else {
 			fatigueForCurrentTurn += attackingCard.getAttackFatigueValue();
-			if(attackMissed(attackingCard)){
+			if(attackMissed(attackingCard) && po.equals(PlayOutcome.NA) || po.equals(PlayOutcome.M)){
 				return new ApplyActionOutcome(ATTACK_MISSED, PlayOutcome.M);
 			}else {
 				playerToAttack.setHealthPoints(playerToAttack.getHealthPoints() - attackingCard.getAttackValue());

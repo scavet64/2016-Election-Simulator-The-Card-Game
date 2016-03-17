@@ -17,7 +17,8 @@ public class Driver {
 		Menu menu = new Menu();
 		AllCards.getInstance();
 		createMasterProfile(menu);
-		createAIProfile(menu);
+		//createAIProfile(menu);
+		createNonRandAIProfile(menu);
 		MainGUI menuGUI = new MainGUI(menu);
 	}
 
@@ -29,6 +30,29 @@ public class Driver {
 			menu.getActiveProfile().addCard(card);
 		}
 		menu.saveActiveProfile();
+	}
+	
+	private static void createNonRandAIProfile(Menu menu){
+		menu.createProfile("aiPlayer");
+		UserProfile aiProfile = menu.getActiveProfile();
+		ArrayList<Card> allCards = AllCards.getInstance().getAllCards();
+		for(Card card: allCards){
+			aiProfile.addCard(card);
+			aiProfile.addCard(card);
+		}
+		Deck aiDeck = aiProfile.getDeck();
+			try {
+				aiDeck.addCard(allCards.get(0));
+				aiDeck.addCard(allCards.get(0));
+				//aiDeck.addCard(allCards.get(1));
+				//aiDeck.addCard(allCards.get(1));
+				aiDeck.addCard(allCards.get(24));
+				//aiDeck.addCard(allCards.get(24));
+			} catch (DeckFullException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+			menu.saveActiveProfile();
 	}
 	
 	private static void createAIProfile(Menu menu){

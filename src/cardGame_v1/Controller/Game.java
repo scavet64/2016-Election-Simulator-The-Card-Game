@@ -4,10 +4,12 @@ import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
+import java.io.Serializable;
 import java.util.HashMap;
 
 import cardGame_v1.AI.AI;
 import cardGame_v1.AI.ApplyActionOutcome;
+import cardGame_v1.AI.Move;
 import cardGame_v1.AI.Play;
 import cardGame_v1.AI.PlayOutcome;
 import cardGame_v1.Model.Card;
@@ -15,11 +17,12 @@ import cardGame_v1.Model.Creature;
 import cardGame_v1.Model.Deck;
 import cardGame_v1.Model.UserProfile;
 
-public class Game {
+public class Game implements Serializable{
 	private Player playerOne;
 	private Player playerTwo;
 	private HashMap<Integer,HashMap<Integer,Creature>> field = new HashMap<Integer,HashMap<Integer,Creature>>();
 	private int turn;
+	private boolean isAI;
 	
 	private final String savedDeckPlayerOne = "playerOneDeck.ser";
 	private final String savedDeckPlayerTwo = "playerTwoDeck.ser";
@@ -43,6 +46,8 @@ public class Game {
 		//In hopes to meet the deadline, this functionality can be added later
 		playerOneProfile.setPlayerImagePath("PlayerImages//DonaldTrumpPlayer.png");
 		playerTwoProfile.setPlayerImagePath("PlayerImages//HillaryClintonPlayer.png");
+		
+		this.isAI = isAI;
 		
 		field.put(1, new HashMap<Integer,Creature>());
 		field.put(2, new HashMap<Integer,Creature>());
@@ -124,8 +129,14 @@ public class Game {
 	public String endTurn() {
 		String message = getCurrentPlayer().draw();
 		turn++;
-		getCurrentPlayer().incrementFatigue();
+		Player currentPlayer = getCurrentPlayer();
+		System.out.println("GAME: turn ended, new player = " + getCurrentPlayerTurn());
+		currentPlayer.incrementFatigue();		
 		return message;
+	}
+	
+	public void fixTurnPls(){
+		turn++;
 	}
 
 	/**
@@ -162,7 +173,7 @@ public class Game {
 					 							Integer.parseInt(label_position_sideSelectionOne[1]));
 			if(label_position_sideSelectionTwo[0].equals("player")) {
 				// Attack the Player
-				ApplyActionOutcome message = (getCurrentPlayer().attack((Creature) actionCard, getOpposingPlayer()));
+				ApplyActionOutcome message = (getCurrentPlayer().attack((Creature) actionCard, getOpposingPlayer(), PlayOutcome.NA));
 				if(getOpposingPlayer().getHealthPoints() <= 0) {
 					gameOver();
 					return new ApplyActionOutcome("", PlayOutcome.H);
@@ -173,7 +184,7 @@ public class Game {
 				int attackingCardPosition = Integer.parseInt(label_position_sideSelectionOne[1]);
 				Creature creatureToAttack = getCreatureAtPosition(opponentsSide, position);
 				// Attack the Creature
-				ApplyActionOutcome message = (getCurrentPlayer().attack((Creature) actionCard, opponentsSide, position, Player.WITH_FATIGUE));
+				ApplyActionOutcome message = (getCurrentPlayer().attack((Creature) actionCard, opponentsSide, position, Player.WITH_FATIGUE, PlayOutcome.NA));
 				if(message.getMessageString().equals(Player.FATIGUED)){
 					// No attack
 				}else {
@@ -181,7 +192,7 @@ public class Game {
 						message.setMessageString(message.getMessageString() + ((Creature) actionCard).getType().modifierString(creatureToAttack.getType()));
 					}
 					// Creature attacks back
-					ApplyActionOutcome attackBackMessage = (getOpposingPlayer().attack(creatureToAttack, getCurrentPlayer().getPlayerSide(), attackingCardPosition, Player.NO_FATIGUE));
+					ApplyActionOutcome attackBackMessage = (getOpposingPlayer().attack(creatureToAttack, getCurrentPlayer().getPlayerSide(), attackingCardPosition, Player.NO_FATIGUE, PlayOutcome.NA));
 					if(attackBackMessage.getOutcome() == PlayOutcome.H) {
 						attackBackMessage.setMessageString(attackBackMessage.getMessageString() + (creatureToAttack).getType().modifierString(((Creature) actionCard).getType()));
 						if(message.getOutcome() == PlayOutcome.H) {
@@ -212,6 +223,62 @@ public class Game {
 			}
 		}
 		return new ApplyActionOutcome("error", PlayOutcome.NA);
+	}
+	
+	public void forceOutcome(PlayOutcome po, Move move){
+		
+		Player attackingPlayer = getCurrentPlayer();
+		Player opposingPlayer;
+		if(attackingPlayer.getPlayerSide() == 1){
+			opposingPlayer = playerTwo;
+		} else {
+			opposingPlayer = playerOne;
+		}
+		
+		int attackingPosition = Integer.parseInt(move.getFirstCardSelection()[1]);
+		int attackingSide = attackingPlayer.getPlayerSide();
+		Creature attackingCreature = getCreatureAtPosition(attackingSide, attackingPosition);
+		
+		if((po == PlayOutcome.HH) || (po == PlayOutcome.HM) || (po == PlayOutcome.MH) || (po == PlayOutcome.MM)){
+			int defendingPosition = Integer.parseInt(move.getSecondCardSelection()[1]);
+			int defendingSide = getOpposingPlayer().getPlayerSide();
+			Creature defendingCreature = getCreatureAtPosition(defendingSide, defendingPosition);
+			
+			switch(po){
+			case HH:
+				attackingPlayer.attack(attackingCreature, defendingSide, defendingPosition, Player.WITH_FATIGUE, PlayOutcome.H );
+				opposingPlayer.attack(defendingCreature, attackingSide, attackingPosition, Player.NO_FATIGUE, PlayOutcome.H);
+				break;
+			case HM:
+				attackingPlayer.attack(attackingCreature, defendingSide, defendingPosition, Player.WITH_FATIGUE, PlayOutcome.H);
+				opposingPlayer.attack(defendingCreature, attackingSide, attackingPosition, Player.NO_FATIGUE, PlayOutcome.M);
+				break;
+			case MH:
+				attackingPlayer.attack(attackingCreature, defendingSide, defendingPosition, Player.WITH_FATIGUE, PlayOutcome.M);
+				opposingPlayer.attack(defendingCreature, attackingSide, attackingPosition, Player.NO_FATIGUE, PlayOutcome.H);
+				break;
+			case MM:
+				attackingPlayer.attack(attackingCreature, defendingSide, defendingPosition, Player.WITH_FATIGUE, PlayOutcome.M);
+				opposingPlayer.attack(defendingCreature, attackingSide, attackingPosition, Player.NO_FATIGUE, PlayOutcome.M);
+				break;
+			default:
+				break;
+			}
+		} else {
+			//attacking player's face
+			switch(po){
+			case H:
+				attackingPlayer.attack(attackingCreature, opposingPlayer, PlayOutcome.H);
+				break;
+			case M:
+				attackingPlayer.attack(attackingCreature, opposingPlayer, PlayOutcome.M);
+				break;
+			default:
+				break;
+				
+			}
+		}
+		
 	}
 
 	/**
@@ -270,5 +337,15 @@ public class Game {
 	 */
 	public Boolean isGameOver() {
 		return gameOver;
+	}
+	
+	public boolean isAIGame() {
+		return isAI;
+	}
+	
+	public void playAITurn() {
+		if(isAI) {
+			((AI) playerTwo).playTurn(this);
+		}
 	}
 }

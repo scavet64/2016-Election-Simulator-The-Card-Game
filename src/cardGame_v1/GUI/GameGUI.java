@@ -21,6 +21,7 @@ import javax.swing.JScrollPane;
 import javax.swing.JTextArea;
 import javax.swing.KeyStroke;
 
+import cardGame_v1.AI.AI;
 import cardGame_v1.Controller.Game;
 import cardGame_v1.Controller.Player;
 import cardGame_v1.Model.Card;
@@ -185,19 +186,7 @@ public class GameGUI extends JPanel{
 			 */
 			@Override
 			public void actionPerformed(ActionEvent e) {
-				actionLog.setText(actionLog.getText() + game.endTurn());
-				if(game.getCurrentPlayerTurn() == PLAYER_TWO) {
-					updateHandPositions(PLAYER_ONE, southHandCards, CARDS_VISIBLE);
-					southDeckButton.setToolTipText(game.getPlayerOne().getProfile().getDeck().getCardsLeftString());
-				}else {
-					updateHandPositions(PLAYER_TWO, northHandCards, CARDS_VISIBLE);
-					northDeckButton.setToolTipText(game.getPlayerTwo().getProfile().getDeck().getCardsLeftString());
-				}
-				updateHandPositions(PLAYER_ONE, southHandCards, HIDE_CARDS);
-				updateHandPositions(PLAYER_TWO, northHandCards, HIDE_CARDS);
-				updateUI();
-				JOptionPane.showMessageDialog(null, "Swap seats and press okay!", "Swap Player", JOptionPane.INFORMATION_MESSAGE);
-				startMove();
+				endTurn();
 			}
 		};
 
@@ -314,6 +303,8 @@ public class GameGUI extends JPanel{
 		southSidePanel.add(southPlayer);
 		southSidePanel.add(Box.createHorizontalGlue());
 		
+		updateHandPositions(PLAYER_ONE, southHandCards, CARDS_VISIBLE);
+		updateHandPositions(PLAYER_TWO, northHandCards, HIDE_CARDS);
 		startMove();
 	}
 
@@ -360,19 +351,46 @@ public class GameGUI extends JPanel{
 		label_position_playerSideSelectionTwo = NOT_SELECTED;
 		updatePositions();
 		disableAllPositions();
-		if(game.getCurrentPlayerTurn() == PLAYER_ONE) {
-			enableButtons(PLAYER_ONE, southHandCards, ifCard);
-			enableButtons(PLAYER_ONE, southFieldCards, ifCard);
-			southDeckButton.setEnabled(true);
+		if(!(game.getCurrentPlayer() instanceof AI)) {
+			if(game.getCurrentPlayerTurn() == PLAYER_ONE) {
+				enableButtons(PLAYER_ONE, southHandCards, ifCard);
+				enableButtons(PLAYER_ONE, southFieldCards, ifCard);
+				southDeckButton.setEnabled(true);
+			}else{
+				enableButtons(PLAYER_TWO, northHandCards, ifCard);
+				enableButtons(PLAYER_TWO, northFieldCards, ifCard);
+				northDeckButton.setEnabled(true);
+			}
 		}else {
-			enableButtons(PLAYER_TWO, northHandCards, ifCard);
-			enableButtons(PLAYER_TWO, northFieldCards, ifCard);
-			northDeckButton.setEnabled(true);
+			game = ((AI) game.getPlayerTwo()).playTurn(game);
+			endTurn();
 		}
+	}
+	
+	//TODO like startMove
+	private void endTurn() {
+		actionLog.setText(actionLog.getText() + game.endTurn());
+		if(game.getCurrentPlayerTurn() == PLAYER_TWO) {
+			updateHandPositions(PLAYER_ONE, southHandCards, CARDS_VISIBLE);
+			southDeckButton.setToolTipText(game.getPlayerOne().getProfile().getDeck().getCardsLeftString());
+		}else {
+			if(!game.isAIGame()) {
+				updateHandPositions(PLAYER_TWO, northHandCards, CARDS_VISIBLE);
+			}
+			northDeckButton.setToolTipText(game.getPlayerTwo().getProfile().getDeck().getCardsLeftString());
+		}
+		updateHandPositions(PLAYER_ONE, southHandCards, HIDE_CARDS);
+		updateHandPositions(PLAYER_TWO, northHandCards, HIDE_CARDS);
+		updateUI();
+		if(!game.isAIGame()) {
+			JOptionPane.showMessageDialog(null, "Swap seats and press okay!", "Swap Player", JOptionPane.INFORMATION_MESSAGE);
+		}
+		startMove();
 	}
 
 	/**
 	 * Update positions to show updated images, hide the opposing Player's hand Cards
+	 * TODO like startMove
 	 */
 	private void updatePositions() {
 		if(game.getCurrentPlayerTurn() == PLAYER_ONE) {
