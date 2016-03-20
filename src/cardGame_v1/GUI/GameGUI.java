@@ -115,7 +115,7 @@ public class GameGUI extends JPanel{
 			public void actionPerformed(ActionEvent e){
 				int choice = JOptionPane.showConfirmDialog(null, "Would you like to quit the game?", "Quit?", JOptionPane.YES_NO_OPTION);
 				if(choice == JOptionPane.YES_OPTION){
-					game.quitGame();
+					getGame().quitGame();
 					returnToMenu();
 				}
 			}
@@ -127,6 +127,7 @@ public class GameGUI extends JPanel{
 		// Initialize ActionListeners
 		cardButtonListener = new ActionListener() {
 			JButton lastButtonPressed;
+
 			/**
 			 * Apply selections, alter button enablization depending on selection.
 			 * When two selections, call applyAction
@@ -146,19 +147,19 @@ public class GameGUI extends JPanel{
 				if(label_position_playerSideSelectionOne == NOT_SELECTED) {
 					switch(label){
 					case "hand":
-						if(game.getCurrentPlayer().getHandOfCards().get(position) instanceof Creature) {
-							if(game.getCurrentPlayerTurn() == PLAYER_ONE) {
+						if(getGame().getCurrentPlayer().getHandOfCards().get(position) instanceof Creature) {
+							if(getGame().getCurrentPlayerTurn() == PLAYER_ONE) {
 								enableButtons(1, southFieldCards, ifEmpty);
 							}else {
 								enableButtons(2, northFieldCards, ifEmpty);
 							}
-						}else if(game.getCurrentPlayer().getHandOfCards().get(position) instanceof Enhancement) {
+						}else if(getGame().getCurrentPlayer().getHandOfCards().get(position) instanceof Enhancement) {
 							enableButtons(1, southFieldCards, ifCard);
 							enableButtons(2, northFieldCards, ifCard);
 						}
 						break;
 					case "field":
-						if(game.getCurrentPlayerTurn() == PLAYER_ONE) {
+						if(getGame().getCurrentPlayerTurn() == PLAYER_ONE) {
 							if(!enableButtons(2, northFieldCards, ifCard)) {
 								northPlayer.setActive(true);
 							}
@@ -303,8 +304,6 @@ public class GameGUI extends JPanel{
 		southSidePanel.add(southPlayer);
 		southSidePanel.add(Box.createHorizontalGlue());
 		
-		updateHandPositions(PLAYER_ONE, southHandCards, CARDS_VISIBLE);
-		updateHandPositions(PLAYER_TWO, northHandCards, HIDE_CARDS);
 		startMove();
 	}
 
@@ -362,7 +361,7 @@ public class GameGUI extends JPanel{
 				northDeckButton.setEnabled(true);
 			}
 		}else {
-			game = ((AI) game.getPlayerTwo()).playTurn(game);
+			game = ((AI) game.getCurrentPlayer()).playTurn(game);
 			endTurn();
 		}
 	}
@@ -370,19 +369,21 @@ public class GameGUI extends JPanel{
 	//TODO like startMove
 	private void endTurn() {
 		actionLog.setText(actionLog.getText() + game.endTurn());
-		if(game.getCurrentPlayerTurn() == PLAYER_TWO) {
-			updateHandPositions(PLAYER_ONE, southHandCards, CARDS_VISIBLE);
-			southDeckButton.setToolTipText(game.getPlayerOne().getProfile().getDeck().getCardsLeftString());
-		}else {
-			if(!game.isAIGame()) {
-				updateHandPositions(PLAYER_TWO, northHandCards, CARDS_VISIBLE);
-			}
-			northDeckButton.setToolTipText(game.getPlayerTwo().getProfile().getDeck().getCardsLeftString());
-		}
+//		if(game.getCurrentPlayerTurn() == PLAYER_TWO) {
+//			if(game.getPlayerOne() instanceof AI) updateHandPositions(PLAYER_ONE, southHandCards, HIDE_CARDS);
+//			else updateHandPositions(PLAYER_ONE, southHandCards, CARDS_VISIBLE);
+//			southDeckButton.setToolTipText(game.getPlayerOne().getProfile().getDeck().getCardsLeftString());
+//		}else {
+//			if(game.getPlayerTwo() instanceof AI) updateHandPositions(PLAYER_TWO, northHandCards, HIDE_CARDS);
+//			else updateHandPositions(PLAYER_TWO, northHandCards, CARDS_VISIBLE);
+//			northDeckButton.setToolTipText(game.getPlayerTwo().getProfile().getDeck().getCardsLeftString());
+//		}
 		updateHandPositions(PLAYER_ONE, southHandCards, HIDE_CARDS);
 		updateHandPositions(PLAYER_TWO, northHandCards, HIDE_CARDS);
+		southDeckButton.setToolTipText(game.getPlayerOne().getProfile().getDeck().getCardsLeftString());
+		northDeckButton.setToolTipText(game.getPlayerTwo().getProfile().getDeck().getCardsLeftString());
 		updateUI();
-		if(!game.isAIGame()) {
+		if(!Game.isAI) {
 			JOptionPane.showMessageDialog(null, "Swap seats and press okay!", "Swap Player", JOptionPane.INFORMATION_MESSAGE);
 		}
 		startMove();
@@ -390,14 +391,15 @@ public class GameGUI extends JPanel{
 
 	/**
 	 * Update positions to show updated images, hide the opposing Player's hand Cards
-	 * TODO like startMove
 	 */
 	private void updatePositions() {
 		if(game.getCurrentPlayerTurn() == PLAYER_ONE) {
-			updateHandPositions(PLAYER_ONE, southHandCards, CARDS_VISIBLE);
+			if(game.getPlayerOne() instanceof AI) updateHandPositions(PLAYER_ONE, southHandCards, HIDE_CARDS);
+			else updateHandPositions(PLAYER_ONE, southHandCards, CARDS_VISIBLE);
 			updateHandPositions(PLAYER_TWO, northHandCards, HIDE_CARDS);
 		}else {
-			updateHandPositions(PLAYER_TWO, northHandCards, CARDS_VISIBLE);
+			if(game.getPlayerTwo() instanceof AI) updateHandPositions(PLAYER_TWO, northHandCards, HIDE_CARDS);
+			else updateHandPositions(PLAYER_TWO, northHandCards, CARDS_VISIBLE);
 			updateHandPositions(PLAYER_ONE, southHandCards, HIDE_CARDS);
 		}
 		updateFieldPositions(PLAYER_ONE, southFieldCards);
@@ -528,5 +530,9 @@ public class GameGUI extends JPanel{
 	protected void paintComponent(Graphics g1) {
 		super.paintComponent(g1);
 		g1.drawImage(new ImageIcon("images//gameBackground.png").getImage(), 0, 0, null);
+	}
+
+	public Game getGame() {
+		return game;
 	}
 }

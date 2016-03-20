@@ -22,6 +22,7 @@ public class AI extends Player {
 	//private Game game;
 	private final String TEMP_GAME_FILE_NAME = "tempGame.ser";
 
+	//TODO May not need game passed
 	public AI(Integer playerSide, UserProfile profile, HashMap<Integer, HashMap<Integer, Creature>> field, Game currentGame) {
 		super(playerSide, profile, field);
 		//this.game = currentGame;
@@ -35,31 +36,50 @@ public class AI extends Player {
 	 * 		PlayAction will take care of the move from there
 	 */
 	public Game playTurn(Game game){
-		System.out.println("\n\n\n\n\nAI: Current Turn at start of AI move = " + game.getCurrentPlayerTurn());
+	    System.out.println("\n\n\n\n\nAI: Current Turn at start of AI move = " + game.getCurrentPlayerTurn()); //TODO
 		PlayFinderUtility.serializeCurrentGameState(game, "ORIGGAME.ser");
-		//System.out.println("AI: Save Complete");
-		PlayFinderUtility.setGame(game);
-		Play currentPlay = PlayFinderUtility.findPlay(game);
-		//System.out.println("AI: Found Play");
-		System.out.println("\n AI: CurrentPlay = " + currentPlay);
+		
+		//Find best play sequence
+		/******* This probs should have a class *****************/
+		Object[] playResult = PlayFinderUtility.findPlay(game);
+		Play currentPlay = (Play) playResult[0];
+		game = (Game) playResult[1];
+		/********************************************************/
+		
+		//Compare whether a pass is more favorable
+		if(currentPlay != null) {
+			System.out.println("AI: Switching to MIN"); //TODO
+			PlayFinderUtility.setValueFlag(PlayFinderUtility.MIN);
+			game.endTurn();
+			/******* This probs should have a class *****************/
+			playResult = PlayFinderUtility.findPlay(game);
+			Play tempPlay = (Play) playResult[0];
+			game = (Game) playResult[1];
+			/********************************************************/
+			double passValue;
+			if(tempPlay == null) {
+				passValue = PlayFinderUtility.gameStateEvaluation(game);
+			}else {
+				PlayReturn playReturn = tempPlay.getValue(game);
+				passValue = playReturn.getValue();
+				game = playReturn.getUpdatedGame();
+			}
+			System.out.println("BRANCHINGPLAY: Switching back to MAX"); //TODO
+			PlayFinderUtility.setValueFlag(PlayFinderUtility.MAX);
+			if(passValue > currentPlay.getValue(game).getValue()) {
+				//A Pass is more favorable
+				currentPlay = null;
+			}
+		}
+		
 		game = PlayFinderUtility.loadTempGame("ORIGGAME.ser");
-		System.out.println("AI: current turn after loading game = " + game.getCurrentPlayerTurn()); //TODO
-		game.fixTurnPls();
-		System.out.println("AI: current turn after fixing turn plz = " + game.getCurrentPlayerTurn()); //TODO
-		game.fixTurnPls();
-		System.out.println("AI: current turn after fixing turn plz again = " + game.getCurrentPlayerTurn()); //TODO
 		while(currentPlay != null){
-			System.out.println("Enter Loop:");
 			Move move = currentPlay.getMove();
-			
-			//applyAction needs to return the outcome and be completely reworked unless there is an easier way
 			PlayOutcome realOutcome = game.applyAction(move.getFirstCardSelection(), move.getSecondCardSelection()).getOutcome();
-			System.out.println("AI: RealOutcome = " + realOutcome);
+			System.out.println("AI: RealOutcome = " + realOutcome); //TODO
 			currentPlay = currentPlay.getNextPlay(realOutcome);
-			//currentPlay = null;
 		}
 		System.out.println("AI: LEAVING play Turn");
-		//game.fixTurnPls();
 		return game;
 	}
 	

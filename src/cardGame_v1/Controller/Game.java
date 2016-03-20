@@ -22,7 +22,6 @@ public class Game implements Serializable{
 	private Player playerTwo;
 	private HashMap<Integer,HashMap<Integer,Creature>> field = new HashMap<Integer,HashMap<Integer,Creature>>();
 	private int turn;
-	private boolean isAI;
 	
 	private final String savedDeckPlayerOne = "playerOneDeck.ser";
 	private final String savedDeckPlayerTwo = "playerTwoDeck.ser";
@@ -32,6 +31,7 @@ public class Game implements Serializable{
 	private final int CARDS_AT_START = 3;
 	private final int WIN_CREDIT_AWARD = 5;
 	private boolean gameOver = false;
+	public static boolean isAI;
 	
 	
 	/**
@@ -47,8 +47,6 @@ public class Game implements Serializable{
 		playerOneProfile.setPlayerImagePath("PlayerImages//DonaldTrumpPlayer.png");
 		playerTwoProfile.setPlayerImagePath("PlayerImages//HillaryClintonPlayer.png");
 		
-		this.isAI = isAI;
-		
 		field.put(1, new HashMap<Integer,Creature>());
 		field.put(2, new HashMap<Integer,Creature>());
 		try(ObjectOutputStream deckOutputOne = new ObjectOutputStream(new FileOutputStream(savedDeckPlayerOne));
@@ -58,6 +56,8 @@ public class Game implements Serializable{
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
+		
+		Game.isAI = isAI;
 		
 		playerOne = new Player(1, playerOneProfile, field);
 		if(isAI){
@@ -130,7 +130,7 @@ public class Game implements Serializable{
 		String message = getCurrentPlayer().draw();
 		turn++;
 		Player currentPlayer = getCurrentPlayer();
-		System.out.println("GAME: turn ended, new player = " + getCurrentPlayerTurn());
+		System.out.println("GAME: turn ended, new player = " + getCurrentPlayerTurn()); //TODO
 		currentPlayer.incrementFatigue();		
 		return message;
 	}
@@ -339,13 +339,11 @@ public class Game implements Serializable{
 		return gameOver;
 	}
 	
-	public boolean isAIGame() {
-		return isAI;
-	}
-	
 	public void playAITurn() {
-		if(isAI) {
-			((AI) playerTwo).playTurn(this);
+		if(getCurrentPlayer() instanceof AI) {
+			((AI) getCurrentPlayer()).playTurn(this);
+		}else {
+			throw new RuntimeException("This is totally me when I'm not even an AI");
 		}
 	}
 }

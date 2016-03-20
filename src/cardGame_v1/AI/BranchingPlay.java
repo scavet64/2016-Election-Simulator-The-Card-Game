@@ -7,7 +7,7 @@ public class BranchingPlay {
 	private PlayOutcome playOutcome;
 	private double weightedValue = Double.MIN_NORMAL;
 	private Play nextPlay;
-	private int chanceToOccur;
+	private double chanceToOccur;
 
 	/**
 	 * 
@@ -15,7 +15,7 @@ public class BranchingPlay {
 	 * @param chanceToOccur
 	 * @param move
 	 */
-	public BranchingPlay(PlayOutcome playOutcome, int chanceToOccur, Move move){
+	public BranchingPlay(PlayOutcome playOutcome, double chanceToOccur, Move move){
 		this.playOutcome = playOutcome;
 		this.chanceToOccur = chanceToOccur;
 		this.move = move;
@@ -26,28 +26,35 @@ public class BranchingPlay {
 	 */
 	public PlayReturn getWeightedValue(Game game) {
 		if(weightedValue == Double.MIN_NORMAL) {
-			double result = 0;
+			double result = 0.0;
 			if(nextPlay == null) {
+				System.out.println("BRANCHINGPLAY: Checking chance: " + playOutcome); //TODO
 				PlayFinderUtility.serializeCurrentGameState(game);
 				if(playOutcome == PlayOutcome.NA) {
 					game.applyAction(move.getFirstCardSelection(), move.getSecondCardSelection());
 				}else {
 					game.forceOutcome(playOutcome, move);
 				}
-				nextPlay = PlayFinderUtility.findPlay(game);
+				/******* This probs should have a class *****************/
+				Object[] playResult = PlayFinderUtility.findPlay(game);
+				nextPlay = (Play) playResult[0];
+				game = (Game) playResult[1];
+				/********************************************************/
 				if(PlayFinderUtility.valueFlag == PlayFinderUtility.MAX) {
 					System.out.println("BRANCHINGPLAY: Switching to MIN"); //TODO
 					PlayFinderUtility.setValueFlag(PlayFinderUtility.MIN);
 					game.endTurn();
-					Play tempPlay = PlayFinderUtility.findPlay(game);
+					/******* This probs should have a class *****************/
+					playResult = PlayFinderUtility.findPlay(game);
+					Play tempPlay = (Play) playResult[0];
+					game = (Game) playResult[1];
+					/********************************************************/
 					if(tempPlay == null) {
 						result = PlayFinderUtility.gameStateEvaluation(game);
-						System.out.println("BRANCHINGPLAY: Didn't find a play for MIN, evaluated gamestate to: " + result); //TODO
 					}else {
 						PlayReturn playReturn = tempPlay.getValue(game);
 						result = playReturn.getValue();
 						game = playReturn.getUpdatedGame();
-						System.out.println("BRANCHINGPLAY: If turn stopped here, result = " + result); //TODO
 					}
 					System.out.println("BRANCHINGPLAY: Switching back to MAX"); //TODO
 					PlayFinderUtility.setValueFlag(PlayFinderUtility.MAX);
@@ -63,17 +70,17 @@ public class BranchingPlay {
 				game = PlayFinderUtility.loadTempGame();
 			}
 			if(nextPlay != null) {
-				System.out.println("BRANCHINGPLAY: Setting result to nextPlay value"); //TODO
 				result = nextPlay.getValue(game).getValue();
 			}
 			result *= chanceToOccur;
-			weightedValue = result / 100;
+			weightedValue = result;
+			System.out.println("BRANCHINGPLAY: Branch weighted value = " + weightedValue); //TODO
 		}
 		return new PlayReturn(weightedValue, game);
 	}
 
 	public Play getNextPlay() {
-		System.out.println("BRANCHINGPLAY: Entered getNextPlay. Next play: " + nextPlay);
+		System.out.println("BRANCHINGPLAY: Next play: " + nextPlay);
 		return nextPlay;
 	}
 }

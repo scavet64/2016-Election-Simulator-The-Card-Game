@@ -15,12 +15,10 @@ public class Play {
 	}
 	
 	private void findBranchingPlays(Game game) {
-		System.out.println("PLAY: findBranchingPlays IS CALLED!!!! :^)");
 		MoveCase moveCase = move.getMoveCase();
 		switch(moveCase){
 		case PlayCard:
-			outcomeToBranchingPlayMap.put(PlayOutcome.NA, new BranchingPlay(PlayOutcome.NA, 100, move));
-			System.out.println("PLAY: BranchingMap = " + outcomeToBranchingPlayMap);
+			outcomeToBranchingPlayMap.put(PlayOutcome.NA, new BranchingPlay(PlayOutcome.NA, 1, move));
 			break;
 		case AttackCard:
 			outcomeToBranchingPlayMap.put(PlayOutcome.HH, new BranchingPlay(PlayOutcome.HH, PlayFinderUtility.getChanceToOccur(PlayOutcome.HH, move, game), move));
@@ -40,7 +38,6 @@ public class Play {
 	}
 	
 	public PlayReturn getValue(Game game){
-		System.out.println("PLAY: getValue IS CALLED!!!! :^)");
 		if(value == Double.MIN_NORMAL) {
 			value = 0;
 			for(BranchingPlay branch : outcomeToBranchingPlayMap.values()) {
@@ -48,14 +45,12 @@ public class Play {
 				value += branchReturn.getValue();
 				game = branchReturn.getUpdatedGame();
 			}
+			System.out.println("PLAY: Play value = " + value); //TODO
 		}
 		return new PlayReturn(value, game);
 	}
 	
 	public Play getNextPlay(PlayOutcome outcome){
-		
-		BranchingPlay bp = outcomeToBranchingPlayMap.get(outcome);
-		System.out.println("PLAY: " + bp);
 		return outcomeToBranchingPlayMap.get(outcome).getNextPlay();
 	}	
 }

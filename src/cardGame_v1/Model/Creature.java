@@ -108,6 +108,7 @@ public class Creature extends Card {
 	 * @param attackValue the attackValue to set
 	 */
 	public void setAttackValue(int attackValue) {
+		if(attackValue < 0) attackValue = 0;
 		this.attackValue = attackValue;
 	}
 
@@ -121,7 +122,7 @@ public class Creature extends Card {
 	/**
 	 * @param healthValue the healthValue to set
 	 */
-	public void setHealthValue(int healthValue) {
+	public void setHealthValue(int healthValue) {  
 		this.healthValue = healthValue;
 	}
 
@@ -136,6 +137,7 @@ public class Creature extends Card {
 	 * @param attackFatigueValue the attackFatigueValue to set
 	 */
 	public void setAttackFatigueValue(int attackFatigueValue) {
+		if(attackFatigueValue < 1) attackFatigueValue = 1;
 		this.attackFatigueValue = attackFatigueValue;
 	}
 
