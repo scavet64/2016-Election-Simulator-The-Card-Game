@@ -74,7 +74,6 @@ public class Player implements Serializable{
 	 */
 	public String draw(){
 		if(handOfCards.size() < MAX_HAND_SIZE && profile.getDeck().getSize() > 0){
-			System.out.println("PLAYER: entered drawcard");
 			handOfCards.add(profile.getDeck().getTopCard());
 			if(isJackHere()) {
 				//System.out.println("PLAYER: entered if jackhere");
