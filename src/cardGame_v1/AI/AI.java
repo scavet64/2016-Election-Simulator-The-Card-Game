@@ -36,6 +36,7 @@ public class AI extends Player {
 	 * 		PlayAction will take care of the move from there
 	 */
 	public Game playTurn(Game game){
+		long startTime = System.nanoTime();
 	    System.out.println("\n\n\n\n\nAI: Current Turn at start of AI move = " + game.getCurrentPlayerTurn()); //TODO
 		PlayFinderUtility.serializeCurrentGameState(game, "ORIGGAME.ser");
 		
@@ -79,7 +80,10 @@ public class AI extends Player {
 			System.out.println("AI: RealOutcome = " + realOutcome); //TODO
 			currentPlay = currentPlay.getNextPlay(realOutcome);
 		}
+		
+		double turnLength = (System.nanoTime() - startTime) * 0.000000001;
 		System.out.println("AI: LEAVING play Turn");
+		System.out.println("AI: LENGTH OF TURN = " + turnLength);
 		return game;
 	}
 	

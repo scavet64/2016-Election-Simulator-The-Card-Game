@@ -15,7 +15,7 @@ import cardGame_v1.Model.RareCreature;
 
 public class PlayFinderUtility {
 
-	private static int saveCount;
+	private static int saveCount;		//TODO: When game exits we need to set this back to 0 some how
 	private static String TEMP_GAME_FILE_NAME = "tempGame";
 	private static Game game;
 	public static int valueFlag;
@@ -170,9 +170,10 @@ public class PlayFinderUtility {
 							String[] cardPosition = ("field " + j + " " + 
 									game.getCurrentPlayer().getPlayerStringSide()).split(" ");
 						
+							System.out.println("PLAYFINDERUTILITY: Found an enhancement play, ai field"); //TODO
 							tempPlay = new Play(new Move(("hand " + j + " " + 
 									game.getCurrentPlayer().getPlayerStringSide()).split(" "), cardPosition, MoveCase.PlayCard ), game);
-							System.out.println("PLAYFINDERUTILITY: Found an enhancement play, ai field"); //TODO
+							
 							//*****************************************************//
 							Object[] result = valueCompare(tempPlay, bestPlay, game);
 							bestPlay = (Play) result[0];

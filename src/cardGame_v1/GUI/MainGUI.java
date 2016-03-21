@@ -345,7 +345,7 @@ public class MainGUI  extends JFrame{
 	 */
 	private void initializePlayGUI(UserProfile opposingPlayer,  boolean isMultiplayer){
 		topLabel.setText("");
-		setLocation(0, 0);
+		setLocation(0, 60);
 		setSize(new Dimension(1910,1050));
 //		setSize(new Dimension(1600,900));
 		errorLabel.setText(" ");

@@ -1,0 +1,21 @@
+Bugs
+Bug format: 
+(Type of bug | Short description | Status)
+	Longer description if needed
+	how to reproduce bug if possible
+	anything relevant
+	
+(Duplication | Enhancements duplicating | unchecked)
+	When I had a single enhancement card in my hand (Air horn) and passed my turn, at the end of the AI's turn 
+	another copy of the card was in my deck. I ended up with 5 Airhorn cards in my hand by the end of it.
+	Unsure of root cause
+	
+(Enhancements | Enhancement plays not getting evaluated | unchecked)
+	In a situation where a rare card was in play on the AI's field and the player held an enhancement card (Airhorn)
+	The AI would not enter the enhancement conditional of the FindNextMove method.
+	Unsure of root cause
+	
+(infinite loop | AI infinitely loops though moves | unchecked)
+	Unsure if this is a turn that lasts an unusual amount of time or something that never ends.
+	Random occurrence after first few turns
+	Unsure of root cause
