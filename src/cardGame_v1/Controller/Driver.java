@@ -1,5 +1,6 @@
 package cardGame_v1.Controller;
 
+import java.io.*;
 import java.util.ArrayList;
 import java.util.Random;
 
@@ -14,11 +15,13 @@ public class Driver {
 
 	@SuppressWarnings("unused")
 	public static void main(String[] args) {
+		
+		printToFile(); //careful using this as it could get out of hand
 		Menu menu = new Menu();
 		AllCards.getInstance();
 		createMasterProfile(menu);
-		createAIProfile(menu);
-		//createNonRandAIProfile(menu);
+		//createAIProfile(menu);
+		createNonRandAIProfile(menu);
 		MainGUI menuGUI = new MainGUI(menu);
 	}
 
@@ -43,10 +46,10 @@ public class Driver {
 		Deck aiDeck = aiProfile.getDeck();
 			try {
 				aiDeck.addCard(allCards.get(0));
-				aiDeck.addCard(allCards.get(0));
+				//aiDeck.addCard(allCards.get(0));
+				//aiDeck.addCard(allCards.get(42));
 				//aiDeck.addCard(allCards.get(1));
-				//aiDeck.addCard(allCards.get(1));
-				aiDeck.addCard(allCards.get(24));
+				aiDeck.addCard(allCards.get(26));
 				//aiDeck.addCard(allCards.get(24));
 			} catch (DeckFullException e) {
 				// TODO Auto-generated catch block
@@ -77,6 +80,14 @@ public class Driver {
 		}
 		
 		menu.saveActiveProfile();
+	}
+	
+	private static void printToFile(){
+		try {
+			System.setOut(new PrintStream(new File("output.txt")));
+		} catch (FileNotFoundException e) {
+			e.printStackTrace();
+		}
 	}
 	
 	//not used ATM but can be used if we want to have more than one master profile with different names
