@@ -167,12 +167,12 @@ public class PlayFinderUtility {
 					for(int j = 0; j < Player.MAX_FIELD_SIZE; j++) { //:^)
 						Creature creature = game.getCurrentPlayer().getField().get(game.getCurrentPlayer().getPlayerSide()).get(j);
 						if(creature != null && creature instanceof Enhanceable && (creature.getAttackFatigueValue() + ((Enhancement) card).getModValue()) > 0) {
-							String[] cardPosition = ("field " + j + " " + 
+							String[] secondCardPosition = ("field " + j + " " + 
 									game.getCurrentPlayer().getPlayerStringSide()).split(" ");
 						
 							System.out.println("PLAYFINDERUTILITY: Found an enhancement play, ai field"); //TODO
-							tempPlay = new Play(new Move(("hand " + j + " " + 
-									game.getCurrentPlayer().getPlayerStringSide()).split(" "), cardPosition, MoveCase.PlayCard ), game);
+							tempPlay = new Play(new Move(("hand " + i + " " + game.getCurrentPlayer().getPlayerStringSide()).split(" "), 
+									secondCardPosition, MoveCase.PlayCard ), game);
 							
 							//*****************************************************//
 							Object[] result = valueCompare(tempPlay, bestPlay, game);
@@ -184,11 +184,11 @@ public class PlayFinderUtility {
 					for(int j = 0; j < Player.MAX_FIELD_SIZE; j++) { //:^)
 						Creature creature = game.getOpposingPlayer().getField().get(game.getOpposingPlayer().getPlayerSide()).get(j);
 						if(creature != null && creature instanceof Enhanceable && (creature.getAttackFatigueValue() + ((Enhancement) card).getModValue()) > 0) {
-							String[] cardPosition = ("field " + j + " " + 
-									game.getCurrentPlayer().getPlayerStringSide()).split(" ");
+							String[] secondCardPosition = ("field " + j + " " + 
+									game.getOpposingPlayer().getPlayerStringSide()).split(" ");
 						
-							tempPlay = new Play(new Move(("hand " + j + " " + 
-									game.getCurrentPlayer().getPlayerStringSide()).split(" "), cardPosition, MoveCase.PlayCard ), game);
+							tempPlay = new Play(new Move(("hand " + i + " " + game.getCurrentPlayer().getPlayerStringSide()).split(" "), 
+									secondCardPosition, MoveCase.PlayCard ), game);
 							System.out.println("PLAYFINDERUTILITY: Found an enhancement play, player field"); //TODO
 							//*****************************************************//
 							Object[] result = valueCompare(tempPlay, bestPlay, game);

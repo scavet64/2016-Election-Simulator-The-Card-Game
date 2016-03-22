@@ -20,8 +20,8 @@ public class Driver {
 		Menu menu = new Menu();
 		AllCards.getInstance();
 		createMasterProfile(menu);
-		//createAIProfile(menu);
-		createNonRandAIProfile(menu);
+		createAIProfile(menu);
+		//createNonRandAIProfile(menu);
 		MainGUI menuGUI = new MainGUI(menu);
 	}
 

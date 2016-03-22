@@ -361,14 +361,14 @@ public class GameGUI extends JPanel{
 				northDeckButton.setEnabled(true);
 			}
 		}else {
-			game = ((AI) game.getCurrentPlayer()).playTurn(game);
+			game = ((AI) game.getCurrentPlayer()).playTurn(game, this);
 			endTurn();
 		}
 	}
 	
 	//TODO like startMove
 	private void endTurn() {
-		actionLog.setText(actionLog.getText() + game.endTurn());
+		addToActionLog(game.endTurn());
 //		if(game.getCurrentPlayerTurn() == PLAYER_TWO) {
 //			if(game.getPlayerOne() instanceof AI) updateHandPositions(PLAYER_ONE, southHandCards, HIDE_CARDS);
 //			else updateHandPositions(PLAYER_ONE, southHandCards, CARDS_VISIBLE);
@@ -493,7 +493,7 @@ public class GameGUI extends JPanel{
 		if(game.isGameOver()) {
 			displayWin(game.getCurrentPlayer().getProfile(), game.getOpposingPlayer().getProfile());
 		}
-		actionLog.setText(actionLog.getText() + message);
+		addToActionLog(message);
 		startMove();
 	}
 
@@ -509,7 +509,7 @@ public class GameGUI extends JPanel{
 	 * @param winningPlayer The profile that won
 	 * @param losingPlayer The profile that lost
 	 */
-	private void displayWin(UserProfile winningPlayer, UserProfile losingPlayer) {
+	public void displayWin(UserProfile winningPlayer, UserProfile losingPlayer) {
 		menu.getMenu().saveProfile(winningPlayer);
 		menu.getMenu().saveProfile(losingPlayer);
 		JOptionPane.showMessageDialog(null, winningPlayer.getName() + " defeated " + losingPlayer.getName() + "\nCongratulations!1!!!Woo!!1!", "GAME OVER", JOptionPane.INFORMATION_MESSAGE);
@@ -534,5 +534,9 @@ public class GameGUI extends JPanel{
 
 	public Game getGame() {
 		return game;
+	}
+	
+	public void addToActionLog(String message) {
+		actionLog.setText(actionLog.getText() + message);
 	}
 }

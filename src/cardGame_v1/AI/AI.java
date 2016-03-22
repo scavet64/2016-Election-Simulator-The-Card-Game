@@ -9,6 +9,7 @@ import java.util.HashMap;
 
 import cardGame_v1.Controller.Game;
 import cardGame_v1.Controller.Player;
+import cardGame_v1.GUI.GameGUI;
 import cardGame_v1.Model.Creature;
 import cardGame_v1.Model.Deck;
 import cardGame_v1.Model.UserProfile;
@@ -35,9 +36,9 @@ public class AI extends Player {
 	 * 		Call playAction with the values from minimax
 	 * 		PlayAction will take care of the move from there
 	 */
-	public Game playTurn(Game game){
+	public Game playTurn(Game game, GameGUI gameGUI){
 		long startTime = System.nanoTime();
-	    System.out.println("\n\n\n\n\nAI: Current Turn at start of AI move = " + game.getCurrentPlayerTurn()); //TODO
+	    System.out.println("\n\n\n\n\nAI: Current Turn at start of AI move = " + game.getTurn()); //TODO
 		PlayFinderUtility.serializeCurrentGameState(game, "ORIGGAME.ser");
 		
 		//Find best play sequence
@@ -76,9 +77,16 @@ public class AI extends Player {
 		game = PlayFinderUtility.loadTempGame("ORIGGAME.ser");
 		while(currentPlay != null){
 			Move move = currentPlay.getMove();
-			PlayOutcome realOutcome = game.applyAction(move.getFirstCardSelection(), move.getSecondCardSelection()).getOutcome();
-			System.out.println("AI: RealOutcome = " + realOutcome); //TODO
-			currentPlay = currentPlay.getNextPlay(realOutcome);
+			ApplyActionOutcome realOutcome = game.applyAction(move.getFirstCardSelection(), move.getSecondCardSelection());
+			
+			if(game.isGameOver()) {
+				gameGUI.displayWin(game.getCurrentPlayer().getProfile(), game.getOpposingPlayer().getProfile());
+				return game;
+			}
+			gameGUI.addToActionLog(realOutcome.getMessageString());
+			
+			System.out.println("AI: RealOutcome = " + realOutcome.getOutcome()); //TODO
+			currentPlay = currentPlay.getNextPlay(realOutcome.getOutcome());
 		}
 		
 		double turnLength = (System.nanoTime() - startTime) * 0.000000001;

@@ -19,7 +19,9 @@ Bug format:
 	Unsure if this is a turn that lasts an unusual amount of time or something that never ends.
 	Random occurrence after first few turns
 	Unsure of root cause
+** I had an incredibly long turn and let it keep running. It did finish eventually **
 	
-(IndexOutOfBounds | Recieve error when applying Action | unchecked)
+(IndexOutOfBounds | Recieve error when applying Action | Possibly Fixed)
 	When the AI finds and trys to apply the action, an index out of bounds error is recieved. I believe it has something
 	to do with the hand as the list index was size 1, same as the number of cards in hand.
+** I believe this was fixed, most likely was wrong for-loop index being used to create the move for enhancements **

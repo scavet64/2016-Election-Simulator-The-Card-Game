@@ -339,11 +339,7 @@ public class Game implements Serializable{
 		return gameOver;
 	}
 	
-	public void playAITurn() {
-		if(getCurrentPlayer() instanceof AI) {
-			((AI) getCurrentPlayer()).playTurn(this);
-		}else {
-			throw new RuntimeException("This is totally me when I'm not even an AI");
-		}
+	public int getTurn() {
+		return turn;
 	}
 }
