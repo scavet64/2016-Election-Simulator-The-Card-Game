@@ -2,8 +2,13 @@ package cardGame_v1.AI;
 
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
+import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
+
+import com.esotericsoftware.kryo.Kryo;
+import com.esotericsoftware.kryo.io.Input;
+import com.esotericsoftware.kryo.io.Output;
 
 import cardGame_v1.Controller.Game;
 import cardGame_v1.Controller.Player;
@@ -23,24 +28,74 @@ public class PlayFinderUtility {
 	public static final int MAX = 0;
 	public static final int MIN = 1;
 
-	/**
-	 * Save a copy of the game before the AI experiments with the game state
-	 */
-	public static boolean serializeCurrentGameState(Game game){
-		boolean didSave;
+//	/**
+//	 * Save a copy of the game before the AI experiments with the game state
+//	 */
+//	public static boolean serializeCurrentGameState(Game game){
+//		boolean didSave;
+//		if(saveCount > 20){
+//			throw new RuntimeException("Exceeded 20 stacked save states");
+//		}
+//		try(ObjectOutputStream gameOutputStream = new ObjectOutputStream(new FileOutputStream(TEMP_GAME_FILE_NAME + saveCount + ".ser"))) {
+//			gameOutputStream.writeObject(game);
+//			System.out.println("PLAYFINDERUTILITY: saved " + saveCount); //TODO
+//			saveCount++;
+//			didSave = true;
+//		} catch (Exception e) {
+//			e.printStackTrace();
+//			didSave = false;
+//		}
+//		return didSave;
+//	}
+	
+	public static void kryoSerializeCurrentGameState(Game game){
+		Kryo kryo = new Kryo();
+		
 		if(saveCount > 20){
 			throw new RuntimeException("Exceeded 20 stacked save states");
 		}
-		try(ObjectOutputStream gameOutputStream = new ObjectOutputStream(new FileOutputStream(TEMP_GAME_FILE_NAME + saveCount + ".ser"))) {
-			gameOutputStream.writeObject(game);
+		try{
+			Output output = new Output(new FileOutputStream(TEMP_GAME_FILE_NAME + saveCount + ".ser"));
+		    kryo.writeObject(output, game);
+		    output.close();
 			System.out.println("PLAYFINDERUTILITY: saved " + saveCount); //TODO
 			saveCount++;
-			didSave = true;
+			output.close();
+		} catch (Exception e){
+			e.printStackTrace();
+		}
+	}
+	
+	public static Game kryoLoadGameState(){
+		Kryo kryo = new Kryo();
+		
+		try {
+			Input input = new Input(new FileInputStream(TEMP_GAME_FILE_NAME + (saveCount-1) + ".ser"));
+			game = (Game) kryo.readObject(input, Game.class);
+			System.out.println("PLAYFINDERUTILITY: restored " + (saveCount-1)); //TODO
+			saveCount--;
+			input.close();
 		} catch (Exception e) {
 			e.printStackTrace();
-			didSave = false;
 		}
-		return didSave;
+		return game;
+	}
+	
+	/**
+	 * Save a copy of the game before the AI experiments with the game state
+	 */
+	public static void fastSerializeCurrentGameState(Game game){
+        FastByteArrayOutputStream fbos = new FastByteArrayOutputStream();
+        try {
+        	ObjectOutputStream out = new ObjectOutputStream(fbos);
+        	out.flush();
+        	out.close();
+			out.writeObject(game);
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+
 	}
 	
 	public static void serializeCurrentGameState(Game game2, String filename){
@@ -120,23 +175,23 @@ public class PlayFinderUtility {
 		return chanceToOccur;
 	}
 
-	/**
-	 * Reload the saved game back into memory.
-	 */
-	public static Game loadTempGame(){
-		try(ObjectInputStream ois = new ObjectInputStream(new FileInputStream(TEMP_GAME_FILE_NAME + (saveCount-1) + ".ser"))) {
-			game = (Game) ois.readObject();
-			System.out.println("PLAYFINDERUTILITY: restored " + (saveCount-1)); //TODO
-			saveCount--;
-		} catch (Exception e) {
-			e.printStackTrace();
-		}
-		return game;
-	}
-	
-	public static Game getGame(){
-		return game;
-	}
+//	/**
+//	 * Reload the saved game back into memory.
+//	 */
+//	public static Game loadTempGame(){
+//		try(ObjectInputStream ois = new ObjectInputStream(new FileInputStream(TEMP_GAME_FILE_NAME + (saveCount-1) + ".ser"))) {
+//			game = (Game) ois.readObject();
+//			System.out.println("PLAYFINDERUTILITY: restored " + (saveCount-1)); //TODO
+//			saveCount--;
+//		} catch (Exception e) {
+//			e.printStackTrace();
+//		}
+//		return game;
+//	}
+//	
+//	public static Game getGame(){
+//		return game;
+//	}
 
 	/**
 	 * A utility method to parse through all possible plays at a given game state. Uses a static flag in this class to either

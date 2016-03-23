@@ -19,6 +19,10 @@ public class Enhancement extends Card {
 		this.statToModify = stat;
 		this.modValue = modValue;
 	}
+	
+	public Enhancement(){
+		
+	}
 
 	/**
 	 * Deep copy constructor for Enhancement

@@ -34,6 +34,10 @@ public class Game implements Serializable{
 	public static boolean isAI;
 	
 	
+	public Game(){
+		
+	}
+	
 	/**
 	 * Constructor for Game
 	 * @param playerOneProfile the active player to be put in the game

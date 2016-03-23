@@ -35,8 +35,9 @@ public class Player implements Serializable{
 	
 	//final variables
 	private final Random RNG = new Random();
-	public final static int MAX_HAND_SIZE = 5;
-	public final static int MAX_FIELD_SIZE = 5;
+	public final static int MAX_HAND_SIZE = 3;
+	public final static int MAX_FIELD_SIZE = 3;
+	public final static int MAX_FATIGUE = 5;
 	private final String NO_SPACE_ERROR = "There is no room to play that creature\n";
 	private final String CARD_NOT_IN_HAND = "You do not have that card in your hand\n";
 	private final String HAND_TOO_FULL = "Your hand is full!\n";
@@ -64,6 +65,10 @@ public class Player implements Serializable{
 		this.field = field;
 		this.playerSide = playerSide;
 		this.setImgFilePath(profile.getPlayerImagePath());
+	}
+	
+	public Player(){
+		
 	}
 	
 	///////Gameplay methods///////
@@ -289,7 +294,7 @@ public class Player implements Serializable{
 	 * fatigue for the current turn.
 	 */
 	protected void incrementFatigue(){
-		if(maxFatigueForCurrentTurn < 10){
+		if(maxFatigueForCurrentTurn < MAX_FATIGUE){
 			maxFatigueForCurrentTurn++;
 		}
 		fatigueForCurrentTurn = 0;

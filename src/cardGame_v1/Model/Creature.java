@@ -44,6 +44,10 @@ public class Creature extends Card {
 		this.fieldImgPath = fieldImgPath;
 	}
 	
+	public Creature(){
+		super();
+	}
+	
 	/**
 	 * Constructor that takes a creature. This is used to create copies of the card
 	 * @param c creature to be copied

@@ -32,6 +32,10 @@ public abstract class Card implements Serializable, Cloneable{
 		setCardBackImgPath("CardImages//CardBack.png");
 	}
 	
+	public Card() {
+		// TODO Auto-generated constructor stub
+	}
+
 	/**
 	 * overridden equals method that compares two cards. If the two cards have the same name, and fatigue value
 	 * they are considered to be equal.

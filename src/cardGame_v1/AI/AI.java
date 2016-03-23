@@ -29,6 +29,8 @@ public class AI extends Player {
 		//this.game = currentGame;
 	}
 	
+	public AI(){}
+	
 	/**
 	 * Plays the AI's turn out determined by the minimax algorithm
 	 * @TODO:
@@ -40,6 +42,19 @@ public class AI extends Player {
 		long startTime = System.nanoTime();
 	    System.out.println("\n\n\n\n\nAI: Current Turn at start of AI move = " + game.getTurn()); //TODO
 		PlayFinderUtility.serializeCurrentGameState(game, "ORIGGAME.ser");
+		
+//		//Thread testing
+//		boolean finished = false;
+//		PlayThread pt = new PlayThread(game, finished);
+//		pt.setPriority(Thread.MAX_PRIORITY);
+//		pt.run();
+//		while(!finished){
+//			finished = pt.finished;
+//		}
+//		Object[] playResult = pt.playResult;
+//		Play currentPlay = (Play) playResult[0];
+//		game = (Game) playResult[1];
+		//
 		
 		//Find best play sequence
 		/******* This probs should have a class *****************/
@@ -94,6 +109,33 @@ public class AI extends Player {
 		System.out.println("AI: LENGTH OF TURN = " + turnLength);
 		return game;
 	}
+	
+	private class PlayThread extends Thread{
+		
+		Game game;
+		boolean finished;
+		Object[] playResult;
+		
+		public PlayThread(Game game, boolean finished){
+			this.game = game;
+			this.finished = finished;
+		}
+        
+		public void run(){
+			playResult = PlayFinderUtility.findPlay(game);
+			finished = true;
+        }
+		
+//        public void pause(){
+//            try {
+//                Thread.sleep(300);   // pause for 3000 milliseconds
+//            }
+//            catch (InterruptedException exc) {
+//            }
+//      }
+	}
+	
+	
 	
 //	/**
 //	 * Save a copy of the game before the AI experiments with the game state
