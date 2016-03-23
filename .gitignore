@@ -1,3 +1,16 @@
+# Java and serial data files
+*.ser
+*.dat
+*.class
+
+# Mobile Tools for Java (J2ME)
+.mtj.tmp/
+
+# Package Files #
+*.jar
+*.war
+*.ear
+
 # Windows image file caches
 Thumbs.db
 ehthumbs.db
