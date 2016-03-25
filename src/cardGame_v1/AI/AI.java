@@ -6,6 +6,7 @@ import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.concurrent.TimeUnit;
 
 import cardGame_v1.Controller.Game;
 import cardGame_v1.Controller.Player;
@@ -102,6 +103,7 @@ public class AI extends Player {
 			
 			System.out.println("AI: RealOutcome = " + realOutcome.getOutcome()); //TODO
 			currentPlay = currentPlay.getNextPlay(realOutcome.getOutcome());
+			delayPlay(1);
 		}
 		
 		double turnLength = (System.nanoTime() - startTime) * 0.000000001;
@@ -110,60 +112,11 @@ public class AI extends Player {
 		return game;
 	}
 	
-	private class PlayThread extends Thread{
-		
-		Game game;
-		boolean finished;
-		Object[] playResult;
-		
-		public PlayThread(Game game, boolean finished){
-			this.game = game;
-			this.finished = finished;
-		}
-        
-		public void run(){
-			playResult = PlayFinderUtility.findPlay(game);
-			finished = true;
+	private void delayPlay(int seconds){
+        try {    
+            TimeUnit.SECONDS.sleep(seconds);
+        } catch (InterruptedException e) {
+        	e.printStackTrace();
         }
-		
-//        public void pause(){
-//            try {
-//                Thread.sleep(300);   // pause for 3000 milliseconds
-//            }
-//            catch (InterruptedException exc) {
-//            }
-//      }
 	}
-	
-	
-	
-//	/**
-//	 * Save a copy of the game before the AI experiments with the game state
-//	 */
-//	private boolean serializeCurrentGameState(){
-//		boolean didSave;
-//		try(ObjectOutputStream gameOutputStream = new ObjectOutputStream(new FileOutputStream(TEMP_GAME_FILE_NAME))) {
-//			gameOutputStream.writeObject(game);
-//			didSave = true;
-//			} catch (Exception e) {
-//				e.printStackTrace();
-//				didSave = false;
-//			}
-//		return didSave;
-//	}
-//	
-//	/**
-//	 * Reload the saved game back into memory.
-//	 */
-//	private boolean loadTempGame(){
-//		boolean didSave;
-//		try(ObjectInputStream ois = new ObjectInputStream(new FileInputStream(TEMP_GAME_FILE_NAME))) {
-//			game = (Game) ois.readObject();
-//			didSave = true;
-//		} catch (Exception e) {
-//			e.printStackTrace();
-//			didSave = false;
-//		}
-//		return didSave;
-//	}
 }
