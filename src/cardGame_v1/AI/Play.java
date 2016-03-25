@@ -71,7 +71,7 @@ public class Play {
 				value += branchReturn.getValue();
 				game = branchReturn.getUpdatedGame();
 			}
-			System.out.println("PLAY: Play value = " + value); //TODO
+			//System.out.println("PLAY: Play value = " + value); //TODO
 		}
 		return new PlayReturn(value, game);
 	}
@@ -87,7 +87,7 @@ public class Play {
 		private PlayOutcome po;
 		
 		public PlayThread(PlayOutcome po, Move move, Game game){
-			System.out.println("New Thread");
+			//System.out.println("New Thread");
 			this.game = game;
 			this.move = move;
 			this.po = po;

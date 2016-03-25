@@ -27,7 +27,7 @@ public class BranchingPlay {
 	public PlayReturn getWeightedValue(Game game) {
 		if(weightedValue == Double.MIN_NORMAL) {
 			double result = 0.0;
-			System.out.println("BRANCHINGPLAY: Checking chance: " + playOutcome); //TODO
+			//System.out.println("BRANCHINGPLAY: Checking chance: " + playOutcome); //TODO
 			//PlayFinderUtility.serializeCurrentGameState(game);
 			PlayFinderUtility.kryoSerializeCurrentGameState(game);	//TODO testing
 			if(playOutcome == PlayOutcome.NA) {
@@ -46,7 +46,7 @@ public class BranchingPlay {
 				game = (Game) playResult[1];
 				/********************************************************/
 				if(PlayFinderUtility.valueFlag == PlayFinderUtility.MAX) {
-					System.out.println("BRANCHINGPLAY: Switching to MIN"); //TODO
+					//System.out.println("BRANCHINGPLAY: Switching to MIN"); //TODO
 					PlayFinderUtility.setValueFlag(PlayFinderUtility.MIN);
 					game.endTurn();
 					/******* This probs should have a class *****************/
@@ -61,7 +61,7 @@ public class BranchingPlay {
 						result = playReturn.getValue();
 						game = playReturn.getUpdatedGame();
 					}
-					System.out.println("BRANCHINGPLAY: Switching back to MAX"); //TODO
+					//System.out.println("BRANCHINGPLAY: Switching back to MAX"); //TODO
 					PlayFinderUtility.setValueFlag(PlayFinderUtility.MAX);
 					if(nextPlay != null && result > nextPlay.getValue(game).getValue()) {
 						nextPlay = null;
@@ -81,7 +81,7 @@ public class BranchingPlay {
 	
 			result *= chanceToOccur;
 			weightedValue = result;
-			System.out.println("BRANCHINGPLAY: Branch weighted value = " + weightedValue); //TODO
+			//System.out.println("BRANCHINGPLAY: Branch weighted value = " + weightedValue); //TODO
 		}
 		return new PlayReturn(weightedValue, game);
 	}

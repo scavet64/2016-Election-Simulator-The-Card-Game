@@ -59,7 +59,7 @@ public class PlayFinderUtility {
 			Output output = new Output(new FileOutputStream(TEMP_GAME_FILE_NAME + saveCount + ".ser"));
 		    kryo.writeObject(output, game);
 		    output.close();
-			System.out.println("PLAYFINDERUTILITY: saved " + saveCount); //TODO
+			//System.out.println("PLAYFINDERUTILITY: saved " + saveCount); //TODO
 			saveCount++;
 			output.close();
 		} catch (Exception e){
@@ -73,7 +73,7 @@ public class PlayFinderUtility {
 		try {
 			Input input = new Input(new FileInputStream(TEMP_GAME_FILE_NAME + (saveCount-1) + ".ser"));
 			game = (Game) kryo.readObject(input, Game.class);
-			System.out.println("PLAYFINDERUTILITY: restored " + (saveCount-1)); //TODO
+			//System.out.println("PLAYFINDERUTILITY: restored " + (saveCount-1)); //TODO
 			saveCount--;
 			input.close();
 		} catch (Exception e) {
@@ -210,7 +210,7 @@ public class PlayFinderUtility {
 				if(!game.getCurrentPlayer().isFieldFull() && game.getCurrentPlayer().canPlay(card)) {
 					tempPlay = new Play(new Move(("hand " + i + " " + game.getCurrentPlayer().getPlayerStringSide()).split(" "), 
 							availableFieldPosition(game.getCurrentPlayer()), MoveCase.PlayCard), game);
-					System.out.println("PLAYFINDERUTILITY: Found a hand play"); //TODO
+					//System.out.println("PLAYFINDERUTILITY: Found a hand play"); //TODO
 					//*****************************************************//
 					Object[] result = valueCompare(tempPlay, bestPlay, game);
 					bestPlay = (Play) result[0];
@@ -226,7 +226,7 @@ public class PlayFinderUtility {
 							String[] secondCardPosition = ("field " + j + " " + 
 									game.getCurrentPlayer().getPlayerStringSide()).split(" ");
 						
-							System.out.println("PLAYFINDERUTILITY: Found an enhancement play, ai field"); //TODO
+							//System.out.println("PLAYFINDERUTILITY: Found an enhancement play, ai field"); //TODO
 							tempPlay = new Play(new Move(("hand " + i + " " + game.getCurrentPlayer().getPlayerStringSide()).split(" "), 
 									secondCardPosition, MoveCase.PlayCard ), game);
 							
@@ -245,7 +245,7 @@ public class PlayFinderUtility {
 						
 							tempPlay = new Play(new Move(("hand " + i + " " + game.getCurrentPlayer().getPlayerStringSide()).split(" "), 
 									secondCardPosition, MoveCase.PlayCard ), game);
-							System.out.println("PLAYFINDERUTILITY: Found an enhancement play, player field"); //TODO
+							//System.out.println("PLAYFINDERUTILITY: Found an enhancement play, player field"); //TODO
 							//*****************************************************//
 							Object[] result = valueCompare(tempPlay, bestPlay, game);
 							bestPlay = (Play) result[0];
@@ -265,7 +265,7 @@ public class PlayFinderUtility {
 					if(game.getCurrentPlayer().getField().get(game.getOpposingPlayer().getPlayerSide()).size() == 0) {
 						tempPlay = new Play(new Move(("field " + i + " " + game.getCurrentPlayer().getPlayerStringSide()).split(" "), 
 								                     ("player " + 0 + " " + game.getOpposingPlayer().getPlayerStringSide()).split(" "), MoveCase.AttackPlayer), game);
-						System.out.println("PLAYFINDERUTILITY: Found a field play, attacking player"); //TODO
+						//System.out.println("PLAYFINDERUTILITY: Found a field play, attacking player"); //TODO
 						//*****************************************************//
 						Object[] result = valueCompare(tempPlay, bestPlay, game);
 						bestPlay = (Play) result[0];
@@ -276,7 +276,7 @@ public class PlayFinderUtility {
 							if(attackedCreature != null) {
 								tempPlay = new Play(new Move(("field " + i + " " + game.getCurrentPlayer().getPlayerStringSide()).split(" "), 
 					                     ("field " + n + " " + game.getOpposingPlayer().getPlayerStringSide()).split(" "), MoveCase.AttackCard), game);
-								System.out.println("PLAYFINDERUTILITY: Found a field play, attacking card"); //TODO
+								//System.out.println("PLAYFINDERUTILITY: Found a field play, attacking card"); //TODO
 								//*****************************************************//
 								Object[] result = valueCompare(tempPlay, bestPlay, game);
 								bestPlay = (Play) result[0];
@@ -306,17 +306,17 @@ public class PlayFinderUtility {
 			double bestValue = tempPlayReturn.getValue();
 			game = tempPlayReturn.getUpdatedGame();
 			if(valueFlag == MAX){
-				System.out.println("PLAYFINDERUTILITY: MAX was set, comparing"); //TODO
+				//System.out.println("PLAYFINDERUTILITY: MAX was set, comparing"); //TODO
 				if(tempValue > bestValue) {
 					bestPlay = tempPlay;
 				}
 			}else {
-				System.out.println("PLAYFINDERUTILITY: MIN was set, comparing"); //TODO
+				//System.out.println("PLAYFINDERUTILITY: MIN was set, comparing"); //TODO
 				if(tempValue < bestValue) {
 					bestPlay = tempPlay;
 				}
 			}
-			System.out.println("PLAYFINDERUTILITY: Better play value = " + bestPlay.getValue(game).getValue()); //TODO
+			//System.out.println("PLAYFINDERUTILITY: Better play value = " + bestPlay.getValue(game).getValue()); //TODO
 		}
 		Object[] result = new Object[2];
 		result[0] = bestPlay;

@@ -34,7 +34,8 @@ public class Creature extends Card {
 	 */
 	public Creature(String name, int fatigueValue, int chanceToHit, int attack, int health, Type type, String imgFilePath, String fieldImgPath){
 		super(name, fatigueValue, imgFilePath);
-		int attackFatigueValue = fatigueValue / 2;
+		int attackFatigueValue = fatigueValue;
+		//int attackFatigueValue = fatigueValue / 2;
 		if(attackFatigueValue <= 0) attackFatigueValue = 1;
 		this.attackFatigueValue = attackFatigueValue;
 		this.attackValue = attack;
@@ -46,6 +47,10 @@ public class Creature extends Card {
 	
 	public Creature(){
 		super();
+	}
+	
+	private void calcAttackFatigue(int fatigueValue){
+		
 	}
 	
 	/**

@@ -65,7 +65,7 @@ public class AI extends Player {
 		
 		//Compare whether a pass is more favorable
 		if(currentPlay != null) {
-			System.out.println("AI: Switching to MIN"); //TODO
+			//System.out.println("AI: Switching to MIN"); //TODO
 			PlayFinderUtility.setValueFlag(PlayFinderUtility.MIN);
 			game.endTurn();
 			/******* This probs should have a class *****************/
@@ -81,7 +81,7 @@ public class AI extends Player {
 				passValue = playReturn.getValue();
 				game = playReturn.getUpdatedGame();
 			}
-			System.out.println("BRANCHINGPLAY: Switching back to MAX"); //TODO
+			//System.out.println("BRANCHINGPLAY: Switching back to MAX"); //TODO
 			PlayFinderUtility.setValueFlag(PlayFinderUtility.MAX);
 			if(passValue > currentPlay.getValue(game).getValue()) {
 				//A Pass is more favorable
@@ -105,7 +105,7 @@ public class AI extends Player {
 		}
 		
 		double turnLength = (System.nanoTime() - startTime) * 0.000000001;
-		System.out.println("AI: LEAVING play Turn");
+		//System.out.println("AI: LEAVING play Turn");
 		System.out.println("AI: LENGTH OF TURN = " + turnLength);
 		return game;
 	}
