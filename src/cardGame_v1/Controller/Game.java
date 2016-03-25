@@ -28,7 +28,7 @@ public class Game implements Serializable{
 	public final static boolean AI_GAME = true;
 	public final static boolean MULTIPLAYER_GAME = false;
 	
-	private final int CARDS_AT_START = 3;
+	private final int CARDS_AT_START = 1;
 	private final int WIN_CREDIT_AWARD = 5;
 	private boolean gameOver = false;
 	public static boolean isAI;
