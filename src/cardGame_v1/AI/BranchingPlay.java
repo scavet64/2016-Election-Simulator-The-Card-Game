@@ -29,7 +29,8 @@ public class BranchingPlay {
 			double result = 0.0;
 			//System.out.println("BRANCHINGPLAY: Checking chance: " + playOutcome); //TODO
 			//PlayFinderUtility.serializeCurrentGameState(game);
-			PlayFinderUtility.kryoSerializeCurrentGameState(game);	//TODO testing
+			//PlayFinderUtility.kryoSerializeCurrentGameState(game);	//TODO testing
+			Game deepCopy = PlayFinderUtility.getDeepCopyGame(game);
 			if(playOutcome == PlayOutcome.NA) {
 				game.applyAction(move.getFirstCardSelection(), move.getSecondCardSelection());
 			}else {
@@ -77,7 +78,8 @@ public class BranchingPlay {
 				}
 			}
 			//game = PlayFinderUtility.loadTempGame();	TODO testing
-			game = PlayFinderUtility.kryoLoadGameState();
+			//game = PlayFinderUtility.kryoLoadGameState();
+			game = deepCopy;
 	
 			result *= chanceToOccur;
 			weightedValue = result;
