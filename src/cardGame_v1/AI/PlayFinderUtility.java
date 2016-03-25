@@ -10,6 +10,7 @@ import java.util.UUID;
 import com.esotericsoftware.kryo.Kryo;
 import com.esotericsoftware.kryo.io.Input;
 import com.esotericsoftware.kryo.io.Output;
+import com.rits.cloning.Cloner;
 
 import cardGame_v1.Controller.Game;
 import cardGame_v1.Controller.Player;
@@ -65,6 +66,17 @@ public class PlayFinderUtility {
 		} catch (Exception e){
 			e.printStackTrace();
 		}
+	}
+	
+	/**
+	 * returns a deep copy of the passed in game
+	 * @param game
+	 * @return
+	 */
+	public static Game getDeepCopyGame(Game game){
+		Cloner cloner = new Cloner();
+		Game gameCopy = cloner.deepClone(game);
+		return gameCopy;
 	}
 	
 	public static Game kryoLoadGameState(){
