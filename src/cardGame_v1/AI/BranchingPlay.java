@@ -36,36 +36,42 @@ public class BranchingPlay {
 				}else {
 					game.forceOutcome(playOutcome, move);
 				}
-				/******* This probs should have a class *****************/
-				Object[] playResult = PlayFinderUtility.findPlay(game);
-				nextPlay = (Play) playResult[0];
-				game = (Game) playResult[1];
-				/********************************************************/
-				if(PlayFinderUtility.valueFlag == PlayFinderUtility.MAX) {
-					System.out.println("BRANCHINGPLAY: Switching to MIN"); //TODO
-					PlayFinderUtility.setValueFlag(PlayFinderUtility.MIN);
-					game.endTurn();
+				if((playOutcome == PlayOutcome.MM || playOutcome == PlayOutcome.M) 
+						&& game.getCurrentPlayer().canAttack(game.getCreatureAtPosition(game.getCurrentPlayerTurn(), 
+								Integer.parseInt(move.getFirstCardSelection()[1])))) {
+					nextPlay = new Play(move, game);
+				}else {
 					/******* This probs should have a class *****************/
-					playResult = PlayFinderUtility.findPlay(game);
-					Play tempPlay = (Play) playResult[0];
+					Object[] playResult = PlayFinderUtility.findPlay(game);
+					nextPlay = (Play) playResult[0];
 					game = (Game) playResult[1];
 					/********************************************************/
-					if(tempPlay == null) {
-						result = PlayFinderUtility.gameStateEvaluation(game);
+					if(PlayFinderUtility.valueFlag == PlayFinderUtility.MAX) {
+						System.out.println("BRANCHINGPLAY: Switching to MIN"); //TODO
+						PlayFinderUtility.setValueFlag(PlayFinderUtility.MIN);
+						game.endTurn();
+						/******* This probs should have a class *****************/
+						playResult = PlayFinderUtility.findPlay(game);
+						Play tempPlay = (Play) playResult[0];
+						game = (Game) playResult[1];
+						/********************************************************/
+						if(tempPlay == null) {
+							result = PlayFinderUtility.gameStateEvaluation(game);
+						}else {
+							PlayReturn playReturn = tempPlay.getValue(game);
+							result = playReturn.getValue();
+							game = playReturn.getUpdatedGame();
+						}
+						System.out.println("BRANCHINGPLAY: Switching back to MAX"); //TODO
+						PlayFinderUtility.setValueFlag(PlayFinderUtility.MAX);
+						if(nextPlay != null && result > nextPlay.getValue(game).getValue()) {
+							nextPlay = null;
+						}
 					}else {
-						PlayReturn playReturn = tempPlay.getValue(game);
-						result = playReturn.getValue();
-						game = playReturn.getUpdatedGame();
-					}
-					System.out.println("BRANCHINGPLAY: Switching back to MAX"); //TODO
-					PlayFinderUtility.setValueFlag(PlayFinderUtility.MAX);
-					if(nextPlay != null && result > nextPlay.getValue(game).getValue()) {
-						nextPlay = null;
-					}
-				}else {
-					result = PlayFinderUtility.gameStateEvaluation(game);
-					if(nextPlay != null && result < nextPlay.getValue(game).getValue()) {
-						nextPlay = null;
+						result = PlayFinderUtility.gameStateEvaluation(game);
+						if(nextPlay != null && result < nextPlay.getValue(game).getValue()) {
+							nextPlay = null;
+						}
 					}
 				}
 				//game = PlayFinderUtility.loadTempGame();	TODO testing
