@@ -1,6 +1,5 @@
 package cardGame_v1.AI;
 
-import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
@@ -103,7 +102,7 @@ public class AI extends Player {
 			
 			System.out.println("AI: RealOutcome = " + realOutcome.getOutcome()); //TODO
 			currentPlay = currentPlay.getNextPlay(realOutcome.getOutcome());
-			delayPlay(1);
+			//delayPlay(3000);
 		}
 		
 		double turnLength = (System.nanoTime() - startTime) * 0.000000001;
@@ -112,9 +111,9 @@ public class AI extends Player {
 		return game;
 	}
 	
-	private void delayPlay(int seconds){
+	private void delayPlay(int nanoseconds){
         try {    
-            TimeUnit.SECONDS.sleep(seconds);
+        	Thread.sleep(nanoseconds);
         } catch (InterruptedException e) {
         	e.printStackTrace();
         }

@@ -186,7 +186,7 @@ public class MainGUI  extends JFrame{
 				case "Single Player":
 					try{
 						mainPanel.remove(menuPanel);
-						initializePlayGUI(menu.loadProfile("aiPlayer"), Game.AI_GAME);
+						initializePlayGUI(menu.loadProfile("Clinton"), Game.AI_GAME);
 					
 					}catch(ProfileNotFoundException | ClassNotFoundException e){
 						errorLabel.setText("That profile does not exist!");

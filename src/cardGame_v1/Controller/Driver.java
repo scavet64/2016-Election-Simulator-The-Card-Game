@@ -21,6 +21,7 @@ public class Driver {
 		AllCards.getInstance();
 		createMasterProfile(menu);
 		createAIProfile(menu);
+		createTrumpProfile(menu);
 		//createNonRandAIProfile(menu);
 		MainGUI menuGUI = new MainGUI(menu);
 	}
@@ -35,8 +36,18 @@ public class Driver {
 		menu.saveActiveProfile();
 	}
 	
+	private static void createTrumpProfile(Menu menu){
+		menu.createProfile("Trump");
+		menu.getActiveProfile().setFirstLoad(false);
+		for(Card card: AllCards.getInstance().getAllCards()){
+			menu.getActiveProfile().addCard(card);
+			menu.getActiveProfile().addCard(card);
+		}
+		menu.saveActiveProfile();
+	}
+	
 	private static void createNonRandAIProfile(Menu menu){
-		menu.createProfile("aiPlayer");
+		menu.createProfile("Clinton");
 		UserProfile aiProfile = menu.getActiveProfile();
 		ArrayList<Card> allCards = AllCards.getInstance().getAllCards();
 		for(Card card: allCards){
@@ -60,7 +71,7 @@ public class Driver {
 	
 	private static void createAIProfile(Menu menu){
 		Random rng = new Random();
-		menu.createProfile("aiPlayer");
+		menu.createProfile("Clinton");
 		UserProfile aiProfile = menu.getActiveProfile();
 		ArrayList<Card> allCards = AllCards.getInstance().getAllCards();
 		for(Card card: allCards){
