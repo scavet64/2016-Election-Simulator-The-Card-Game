@@ -48,8 +48,10 @@ public class Game implements Serializable{
 		//This is only for the presentation & demo
 		//In the future, users can choose their own player image
 		//In hopes to meet the deadline, this functionality can be added later
-		playerOneProfile.setPlayerImagePath("PlayerImages//DonaldTrumpPlayer.png");
-		playerTwoProfile.setPlayerImagePath("PlayerImages//HillaryClintonPlayer.png");
+//		playerOneProfile.setPlayerImagePath("PlayerImages//DonaldTrumpPlayer.png");
+//		playerTwoProfile.setPlayerImagePath("PlayerImages//HillaryClintonPlayer.png");
+		playerOneProfile.setPlayerImagePath("PlayerImages//HillaryClintonPlayer.png");
+		playerTwoProfile.setPlayerImagePath("PlayerImages//DonaldTrumpPlayer.png");
 		
 		field.put(1, new HashMap<Integer,Creature>());
 		field.put(2, new HashMap<Integer,Creature>());

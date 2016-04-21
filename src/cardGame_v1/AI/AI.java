@@ -12,6 +12,7 @@ import cardGame_v1.Controller.Player;
 import cardGame_v1.GUI.GameGUI;
 import cardGame_v1.Model.Creature;
 import cardGame_v1.Model.Deck;
+import cardGame_v1.Model.SoundEffectUtility;
 import cardGame_v1.Model.UserProfile;
 
 /**
@@ -42,6 +43,7 @@ public class AI extends Player {
 		long startTime = System.nanoTime();
 	    System.out.println("\n\n\n\n\nAI: Current Turn at start of AI move = " + game.getTurn()); //TODO
 		PlayFinderUtility.serializeCurrentGameState(game, "ORIGGAME.ser");
+		//SoundEffectUtility.PlayTrumpAttackHitEffect();
 		
 //		//Thread testing
 //		boolean finished = false;
@@ -90,20 +92,42 @@ public class AI extends Player {
 		}
 		
 		game = PlayFinderUtility.loadTempGame("ORIGGAME.ser");
+		boolean hasHit = false;
+		boolean hasMiss = false;
+		
 		while(currentPlay != null){
 			Move move = currentPlay.getMove();
 			ApplyActionOutcome realOutcome = game.applyAction(move.getFirstCardSelection(), move.getSecondCardSelection());
 			
-			if(game.isGameOver()) {
+			if(game.isGameOver()) {		
+				SoundEffectUtility.playGameOverSound(true);
 				gameGUI.displayWin(game.getCurrentPlayer().getProfile(), game.getOpposingPlayer().getProfile());
 				return game;
 			}
 			gameGUI.addToActionLog(realOutcome.getMessageString());
 			
-			System.out.println("AI: RealOutcome = " + realOutcome.getOutcome()); //TODO
+			switch(realOutcome.getOutcome()) {
+			case HH:
+			case HM:
+			case H:
+				hasHit = true;
+				break;
+			case MH:
+			case MM:
+			case M:
+				hasMiss = true;
+				break;
+			default:
+				break;
+			}
+			
+			//System.out.println("AI: RealOutcome = " + realOutcome.getOutcome()); //TODO
 			currentPlay = currentPlay.getNextPlay(realOutcome.getOutcome());
 			//delayPlay(3000);
 		}
+		
+		if(hasHit) SoundEffectUtility.PlayTrumpAttackHitEffect();
+		else if(hasMiss) SoundEffectUtility.PlayTrumpAttackMissEffect();
 		
 		double turnLength = (System.nanoTime() - startTime) * 0.000000001;
 		//System.out.println("AI: LEAVING play Turn");
@@ -111,11 +135,18 @@ public class AI extends Player {
 		return game;
 	}
 	
-	private void delayPlay(int nanoseconds){
-        try {    
-        	Thread.sleep(nanoseconds);
-        } catch (InterruptedException e) {
-        	e.printStackTrace();
-        }
+	private void delayPlay(int delayTime) {
+		long startTime = System.nanoTime();
+		
+		long endTime = startTime + delayTime;
+		while(endTime > System.nanoTime());
 	}
+	
+//	private void delayPlay(int nanoseconds){
+//        try {  
+//        	Thread.sleep(nanoseconds);
+//        } catch (InterruptedException e) {
+//        	e.printStackTrace();
+//        }
+//	}
 }

@@ -37,7 +37,7 @@ public class Player implements Serializable{
 	private final Random RNG = new Random();
 	public final static int MAX_HAND_SIZE = 3;
 	public final static int MAX_FIELD_SIZE = 3;
-	public final static int MAX_FATIGUE = 6;
+	public final static int MAX_FATIGUE = 7;
 	private final String NO_SPACE_ERROR = "There is no room to play that creature\n";
 	private final String CARD_NOT_IN_HAND = "You do not have that card in your hand\n";
 	private final String HAND_TOO_FULL = "Your hand is full!\n";

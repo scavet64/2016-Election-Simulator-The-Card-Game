@@ -21,18 +21,33 @@ public class Driver {
 		AllCards.getInstance();
 		createMasterProfile(menu);
 		createAIProfile(menu);
-		createTrumpProfile(menu);
+		//createTrumpProfile(menu);
 		//createNonRandAIProfile(menu);
 		MainGUI menuGUI = new MainGUI(menu);
 	}
 
 	private static void createMasterProfile(Menu menu){
-		menu.createProfile("Master");
-		menu.getActiveProfile().setFirstLoad(false);
+		Random rng = new Random();
+		ArrayList<Card> allCards = AllCards.getInstance().getAllCards();
+		menu.createProfile("Clinton");
+		UserProfile masterProfile = menu.getActiveProfile();
+		masterProfile.setFirstLoad(false);
 		for(Card card: AllCards.getInstance().getAllCards()){
 			menu.getActiveProfile().addCard(card);
 			menu.getActiveProfile().addCard(card);
 		}
+		Deck aiDeck = masterProfile.getDeck();
+		int totalCardsInGame = allCards.size();
+		boolean isFinished = false;
+		while(!isFinished){
+			try {
+				aiDeck.addCard(allCards.get(rng.nextInt(totalCardsInGame-1)));
+			} catch (DeckFullException e) {
+				// TODO Auto-generated catch block
+				isFinished = true;
+			}
+		}
+		
 		menu.saveActiveProfile();
 	}
 	
@@ -71,7 +86,7 @@ public class Driver {
 	
 	private static void createAIProfile(Menu menu){
 		Random rng = new Random();
-		menu.createProfile("Clinton");
+		menu.createProfile("Trump");
 		UserProfile aiProfile = menu.getActiveProfile();
 		ArrayList<Card> allCards = AllCards.getInstance().getAllCards();
 		for(Card card: allCards){
