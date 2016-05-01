@@ -65,8 +65,8 @@ public class SoundEffectUtility {
 			music.stop();
 		} else {
 			music.stop();
-			playSoundEffect("Sounds/YouLost.wav",NOLOOP);
-			//playSoundEffect("Sounds/TrumpLost.wav",NOLOOP);
+			//playSoundEffect("Sounds/YouLost.wav",NOLOOP);
+			playSoundEffect("Sounds/TrumpLost.wav",NOLOOP);
 		}
 		
 	}

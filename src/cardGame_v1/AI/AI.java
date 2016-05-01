@@ -42,21 +42,7 @@ public class AI extends Player {
 	public Game playTurn(Game game, GameGUI gameGUI){
 		long startTime = System.nanoTime();
 	    System.out.println("\n\n\n\n\nAI: Current Turn at start of AI move = " + game.getTurn()); //TODO
-		PlayFinderUtility.serializeCurrentGameState(game, "ORIGGAME.ser");
-		//SoundEffectUtility.PlayTrumpAttackHitEffect();
-		
-//		//Thread testing
-//		boolean finished = false;
-//		PlayThread pt = new PlayThread(game, finished);
-//		pt.setPriority(Thread.MAX_PRIORITY);
-//		pt.run();
-//		while(!finished){
-//			finished = pt.finished;
-//		}
-//		Object[] playResult = pt.playResult;
-//		Play currentPlay = (Play) playResult[0];
-//		game = (Game) playResult[1];
-		//
+		Game gameDeepCopy = PlayFinderUtility.getDeepCopyGame(game);
 		
 		//Find best play sequence
 		/******* This probs should have a class *****************/
@@ -91,7 +77,7 @@ public class AI extends Player {
 			}
 		}
 		
-		game = PlayFinderUtility.loadTempGame("ORIGGAME.ser");
+		game = gameDeepCopy;
 		boolean hasHit = false;
 		boolean hasMiss = false;
 		
@@ -141,12 +127,4 @@ public class AI extends Player {
 		long endTime = startTime + delayTime;
 		while(endTime > System.nanoTime());
 	}
-	
-//	private void delayPlay(int nanoseconds){
-//        try {  
-//        	Thread.sleep(nanoseconds);
-//        } catch (InterruptedException e) {
-//        	e.printStackTrace();
-//        }
-//	}
 }

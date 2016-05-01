@@ -29,26 +29,6 @@ public class PlayFinderUtility {
 
 	public static final int MAX = 0;
 	public static final int MIN = 1;
-
-//	/**
-//	 * Save a copy of the game before the AI experiments with the game state
-//	 */
-//	public static boolean serializeCurrentGameState(Game game){
-//		boolean didSave;
-//		if(saveCount > 20){
-//			throw new RuntimeException("Exceeded 20 stacked save states");
-//		}
-//		try(ObjectOutputStream gameOutputStream = new ObjectOutputStream(new FileOutputStream(TEMP_GAME_FILE_NAME + saveCount + ".ser"))) {
-//			gameOutputStream.writeObject(game);
-//			System.out.println("PLAYFINDERUTILITY: saved " + saveCount); //TODO
-//			saveCount++;
-//			didSave = true;
-//		} catch (Exception e) {
-//			e.printStackTrace();
-//			didSave = false;
-//		}
-//		return didSave;
-//	}
 	
 	public static void kryoSerializeCurrentGameState(Game game){
 		Kryo kryo = new Kryo();
@@ -68,6 +48,47 @@ public class PlayFinderUtility {
 		}
 	}
 	
+	//	public static void serializeCurrentGameState(Game game2, String filename){
+	//		//boolean didSave;
+	//		try(ObjectOutputStream gameOutputStream = new ObjectOutputStream(new FileOutputStream(filename))) {
+	//			gameOutputStream.writeObject(game2);
+	//			//saveCount++;
+	//			//didSave = true;
+	//		} catch (Exception e) {
+	//			e.printStackTrace();
+	//			//didSave = false;
+	//		}
+	//		//return didSave;
+	//	}
+		
+//		/**
+//		 * Reload the saved game back into memory.
+//		 */
+//		public static Game loadTempGame(String filename){
+//			try(ObjectInputStream ois = new ObjectInputStream(new FileInputStream(filename))) {
+//				game = (Game) ois.readObject();
+//				//saveCount--;
+//			} catch (Exception e) {
+//				e.printStackTrace();
+//			}
+//			return game;
+//		}
+
+	public static Game kryoLoadGameState(){
+			Kryo kryo = new Kryo();
+			
+			try {
+				Input input = new Input(new FileInputStream(TEMP_GAME_FILE_NAME + (saveCount-1) + ".ser"));
+				game = (Game) kryo.readObject(input, Game.class);
+				//System.out.println("PLAYFINDERUTILITY: restored " + (saveCount-1)); //TODO
+				saveCount--;
+				input.close();
+			} catch (Exception e) {
+				e.printStackTrace();
+			}
+			return game;
+		}
+
 	/**
 	 * returns a deep copy of the passed in game
 	 * @param game
@@ -79,63 +100,20 @@ public class PlayFinderUtility {
 		return gameCopy;
 	}
 	
-	public static Game kryoLoadGameState(){
-		Kryo kryo = new Kryo();
-		
-		try {
-			Input input = new Input(new FileInputStream(TEMP_GAME_FILE_NAME + (saveCount-1) + ".ser"));
-			game = (Game) kryo.readObject(input, Game.class);
-			//System.out.println("PLAYFINDERUTILITY: restored " + (saveCount-1)); //TODO
-			saveCount--;
-			input.close();
-		} catch (Exception e) {
-			e.printStackTrace();
-		}
-		return game;
-	}
 	
-	/**
-	 * Save a copy of the game before the AI experiments with the game state
-	 */
-	public static void fastSerializeCurrentGameState(Game game){
-        FastByteArrayOutputStream fbos = new FastByteArrayOutputStream();
-        try {
-        	ObjectOutputStream out = new ObjectOutputStream(fbos);
-        	out.flush();
-        	out.close();
-			out.writeObject(game);
-		} catch (IOException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
-
-	}
 	
-	public static void serializeCurrentGameState(Game game2, String filename){
-		//boolean didSave;
-		try(ObjectOutputStream gameOutputStream = new ObjectOutputStream(new FileOutputStream(filename))) {
-			gameOutputStream.writeObject(game2);
-			//saveCount++;
-			//didSave = true;
-		} catch (Exception e) {
-			e.printStackTrace();
-			//didSave = false;
-		}
-		//return didSave;
-	}
-	
-	/**
-	 * Reload the saved game back into memory.
-	 */
-	public static Game loadTempGame(String filename){
-		try(ObjectInputStream ois = new ObjectInputStream(new FileInputStream(filename))) {
-			game = (Game) ois.readObject();
-			//saveCount--;
-		} catch (Exception e) {
-			e.printStackTrace();
-		}
-		return game;
-	}
+//	public static void serializeCurrentGameState(Game game2, String filename){
+//		//boolean didSave;
+//		try(ObjectOutputStream gameOutputStream = new ObjectOutputStream(new FileOutputStream(filename))) {
+//			gameOutputStream.writeObject(game2);
+//			//saveCount++;
+//			//didSave = true;
+//		} catch (Exception e) {
+//			e.printStackTrace();
+//			//didSave = false;
+//		}
+//		//return didSave;
+//	}
 	
 	/**
 	 * Returns the chance of occurrence for the passed in move and playoutcome.
