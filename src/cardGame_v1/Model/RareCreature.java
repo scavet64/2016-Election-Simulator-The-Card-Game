@@ -10,6 +10,10 @@ public class RareCreature extends Creature implements Enhanceable {
 		super(name, fatigueValue, chanceToHit, attack, health, type, imgFilePath, fieldImgPath);
 	}
 	
+	public RareCreature(){
+		
+	}
+	
 	/**
 	 * Deep copy constructor for RareCreature
 	 */

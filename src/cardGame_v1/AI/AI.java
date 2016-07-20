@@ -1,17 +1,18 @@
 package cardGame_v1.AI;
 
-import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.concurrent.TimeUnit;
 
 import cardGame_v1.Controller.Game;
 import cardGame_v1.Controller.Player;
 import cardGame_v1.GUI.GameGUI;
 import cardGame_v1.Model.Creature;
 import cardGame_v1.Model.Deck;
+import cardGame_v1.Model.SoundEffectUtility;
 import cardGame_v1.Model.UserProfile;
 
 /**
@@ -29,6 +30,8 @@ public class AI extends Player {
 		//this.game = currentGame;
 	}
 	
+	public AI(){}
+	
 	/**
 	 * Plays the AI's turn out determined by the minimax algorithm
 	 * @TODO:
@@ -39,7 +42,7 @@ public class AI extends Player {
 	public Game playTurn(Game game, GameGUI gameGUI){
 		long startTime = System.nanoTime();
 	    System.out.println("\n\n\n\n\nAI: Current Turn at start of AI move = " + game.getTurn()); //TODO
-		PlayFinderUtility.serializeCurrentGameState(game, "ORIGGAME.ser");
+		Game gameDeepCopy = PlayFinderUtility.getDeepCopyGame(game);
 		
 		//Find best play sequence
 		/******* This probs should have a class *****************/
@@ -50,7 +53,7 @@ public class AI extends Player {
 		
 		//Compare whether a pass is more favorable
 		if(currentPlay != null) {
-			System.out.println("AI: Switching to MIN"); //TODO
+			//System.out.println("AI: Switching to MIN"); //TODO
 			PlayFinderUtility.setValueFlag(PlayFinderUtility.MIN);
 			game.endTurn();
 			/******* This probs should have a class *****************/
@@ -66,7 +69,7 @@ public class AI extends Player {
 				passValue = playReturn.getValue();
 				game = playReturn.getUpdatedGame();
 			}
-			System.out.println("BRANCHINGPLAY: Switching back to MAX"); //TODO
+			//System.out.println("BRANCHINGPLAY: Switching back to MAX"); //TODO
 			PlayFinderUtility.setValueFlag(PlayFinderUtility.MAX);
 			if(passValue > currentPlay.getValue(game).getValue()) {
 				//A Pass is more favorable
@@ -74,54 +77,54 @@ public class AI extends Player {
 			}
 		}
 		
-		game = PlayFinderUtility.loadTempGame("ORIGGAME.ser");
+		game = gameDeepCopy;
+		boolean hasHit = false;
+		boolean hasMiss = false;
+		
 		while(currentPlay != null){
 			Move move = currentPlay.getMove();
 			ApplyActionOutcome realOutcome = game.applyAction(move.getFirstCardSelection(), move.getSecondCardSelection());
 			
-			if(game.isGameOver()) {
+			if(game.isGameOver()) {		
+				SoundEffectUtility.playGameOverSound(true);
 				gameGUI.displayWin(game.getCurrentPlayer().getProfile(), game.getOpposingPlayer().getProfile());
 				return game;
 			}
 			gameGUI.addToActionLog(realOutcome.getMessageString());
 			
-			System.out.println("AI: RealOutcome = " + realOutcome.getOutcome()); //TODO
+			switch(realOutcome.getOutcome()) {
+			case HH:
+			case HM:
+			case H:
+				hasHit = true;
+				break;
+			case MH:
+			case MM:
+			case M:
+				hasMiss = true;
+				break;
+			default:
+				break;
+			}
+			
+			//System.out.println("AI: RealOutcome = " + realOutcome.getOutcome()); //TODO
 			currentPlay = currentPlay.getNextPlay(realOutcome.getOutcome());
+			//delayPlay(3000);
 		}
 		
+		if(hasHit) SoundEffectUtility.PlayTrumpAttackHitEffect();
+		else if(hasMiss) SoundEffectUtility.PlayTrumpAttackMissEffect();
+		
 		double turnLength = (System.nanoTime() - startTime) * 0.000000001;
-		System.out.println("AI: LEAVING play Turn");
+		//System.out.println("AI: LEAVING play Turn");
 		System.out.println("AI: LENGTH OF TURN = " + turnLength);
 		return game;
 	}
 	
-//	/**
-//	 * Save a copy of the game before the AI experiments with the game state
-//	 */
-//	private boolean serializeCurrentGameState(){
-//		boolean didSave;
-//		try(ObjectOutputStream gameOutputStream = new ObjectOutputStream(new FileOutputStream(TEMP_GAME_FILE_NAME))) {
-//			gameOutputStream.writeObject(game);
-//			didSave = true;
-//			} catch (Exception e) {
-//				e.printStackTrace();
-//				didSave = false;
-//			}
-//		return didSave;
-//	}
-//	
-//	/**
-//	 * Reload the saved game back into memory.
-//	 */
-//	private boolean loadTempGame(){
-//		boolean didSave;
-//		try(ObjectInputStream ois = new ObjectInputStream(new FileInputStream(TEMP_GAME_FILE_NAME))) {
-//			game = (Game) ois.readObject();
-//			didSave = true;
-//		} catch (Exception e) {
-//			e.printStackTrace();
-//			didSave = false;
-//		}
-//		return didSave;
-//	}
+	private void delayPlay(int delayTime) {
+		long startTime = System.nanoTime();
+		
+		long endTime = startTime + delayTime;
+		while(endTime > System.nanoTime());
+	}
 }

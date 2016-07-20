@@ -7,7 +7,9 @@ import java.awt.GridLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.KeyEvent;
+import java.io.File;
 import java.util.ArrayList;
+import java.util.Random;
 import java.util.function.Predicate;
 
 import javax.swing.BoxLayout;
@@ -22,13 +24,19 @@ import javax.swing.JTextArea;
 import javax.swing.KeyStroke;
 
 import cardGame_v1.AI.AI;
+import cardGame_v1.AI.ApplyActionOutcome;
 import cardGame_v1.Controller.Game;
 import cardGame_v1.Controller.Player;
 import cardGame_v1.Model.Card;
 import cardGame_v1.Model.Creature;
 import cardGame_v1.Model.Enhancement;
+import cardGame_v1.Model.SoundEffectUtility;
 import cardGame_v1.Model.UserProfile;
 
+import javax.print.attribute.standard.Media;
+import javax.sound.sampled.AudioInputStream;
+import javax.sound.sampled.AudioSystem;
+import javax.sound.sampled.Clip;
 import javax.swing.AbstractAction;
 import javax.swing.Action;
 import javax.swing.Box;
@@ -104,6 +112,8 @@ public class GameGUI extends JPanel{
 		this.menu = mainGUI;
 		setLayout(new BoxLayout(this, BoxLayout.Y_AXIS));
 		
+		SoundEffectUtility.playMusic();
+		SoundEffectUtility.playGameStartSound();
 		InputMap inMap = getInputMap(JComponent.WHEN_IN_FOCUSED_WINDOW);
 		
 		Action quitGame = new AbstractAction(){
@@ -482,15 +492,17 @@ public class GameGUI extends JPanel{
 		}
 		return enabledButton;
 	}
-
+	
 	/**
 	 * Use the two selections to apply an action in Game,
 	 * after an action, determine if the game has been won.
 	 * Update the action log and start the next move.
 	 */
 	public void applyAction() {
-		String message = game.applyAction(label_position_playerSideSelectionOne, label_position_playerSideSelectionTwo).getMessageString();
-		if(game.isGameOver()) {
+		ApplyActionOutcome outcome = game.applyAction(label_position_playerSideSelectionOne, label_position_playerSideSelectionTwo);
+		String message = outcome.getMessageString();
+		if(game.isGameOver()) {		
+			SoundEffectUtility.playGameOverSound(false);
 			displayWin(game.getCurrentPlayer().getProfile(), game.getOpposingPlayer().getProfile());
 		}
 		addToActionLog(message);
@@ -513,6 +525,7 @@ public class GameGUI extends JPanel{
 		menu.getMenu().saveProfile(winningPlayer);
 		menu.getMenu().saveProfile(losingPlayer);
 		JOptionPane.showMessageDialog(null, winningPlayer.getName() + " defeated " + losingPlayer.getName() + "\nCongratulations!1!!!Woo!!1!", "GAME OVER", JOptionPane.INFORMATION_MESSAGE);
+		SoundEffectUtility.stopSounds();
 		returnToMenu();
 	}
 	

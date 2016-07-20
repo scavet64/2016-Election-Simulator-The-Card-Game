@@ -27,21 +27,27 @@ public class BranchingPlay {
 	public PlayReturn getWeightedValue(Game game) {
 		if(weightedValue == Double.MIN_NORMAL) {
 			double result = 0.0;
-			if(nextPlay == null) {
-				System.out.println("BRANCHINGPLAY: Checking chance: " + playOutcome); //TODO
-				PlayFinderUtility.serializeCurrentGameState(game);
-				if(playOutcome == PlayOutcome.NA) {
-					game.applyAction(move.getFirstCardSelection(), move.getSecondCardSelection());
-				}else {
-					game.forceOutcome(playOutcome, move);
-				}
+			//System.out.println("BRANCHINGPLAY: Checking chance: " + playOutcome); //TODO
+			//PlayFinderUtility.serializeCurrentGameState(game);
+			//PlayFinderUtility.kryoSerializeCurrentGameState(game);	//TODO testing
+			Game deepCopy = PlayFinderUtility.getDeepCopyGame(game);
+			if(playOutcome == PlayOutcome.NA) {
+				game.applyAction(move.getFirstCardSelection(), move.getSecondCardSelection());
+			}else {
+				game.forceOutcome(playOutcome, move);
+			}
+			if((playOutcome == PlayOutcome.MM || playOutcome == PlayOutcome.M) 
+					&& game.getCurrentPlayer().canAttack(game.getCreatureAtPosition(game.getCurrentPlayerTurn(), 
+							Integer.parseInt(move.getFirstCardSelection()[1])))) {
+				nextPlay = new Play(move, game);
+			}else {
 				/******* This probs should have a class *****************/
 				Object[] playResult = PlayFinderUtility.findPlay(game);
 				nextPlay = (Play) playResult[0];
 				game = (Game) playResult[1];
 				/********************************************************/
 				if(PlayFinderUtility.valueFlag == PlayFinderUtility.MAX) {
-					System.out.println("BRANCHINGPLAY: Switching to MIN"); //TODO
+					//System.out.println("BRANCHINGPLAY: Switching to MIN"); //TODO
 					PlayFinderUtility.setValueFlag(PlayFinderUtility.MIN);
 					game.endTurn();
 					/******* This probs should have a class *****************/
@@ -56,7 +62,7 @@ public class BranchingPlay {
 						result = playReturn.getValue();
 						game = playReturn.getUpdatedGame();
 					}
-					System.out.println("BRANCHINGPLAY: Switching back to MAX"); //TODO
+					//System.out.println("BRANCHINGPLAY: Switching back to MAX"); //TODO
 					PlayFinderUtility.setValueFlag(PlayFinderUtility.MAX);
 					if(nextPlay != null && result > nextPlay.getValue(game).getValue()) {
 						nextPlay = null;
@@ -67,14 +73,17 @@ public class BranchingPlay {
 						nextPlay = null;
 					}
 				}
-				game = PlayFinderUtility.loadTempGame();
+				if(nextPlay != null) {
+					result = nextPlay.getValue(game).getValue();
+				}
 			}
-			if(nextPlay != null) {
-				result = nextPlay.getValue(game).getValue();
-			}
+			//game = PlayFinderUtility.loadTempGame();	TODO testing
+			//game = PlayFinderUtility.kryoLoadGameState();
+			game = deepCopy;
+	
 			result *= chanceToOccur;
 			weightedValue = result;
-			System.out.println("BRANCHINGPLAY: Branch weighted value = " + weightedValue); //TODO
+			//System.out.println("BRANCHINGPLAY: Branch weighted value = " + weightedValue); //TODO
 		}
 		return new PlayReturn(weightedValue, game);
 	}

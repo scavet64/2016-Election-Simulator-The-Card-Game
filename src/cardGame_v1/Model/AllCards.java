@@ -13,7 +13,7 @@ public class AllCards {
 		//initialize all cards here		
 											//name,fatigue,chance,attack,health,type,CardImage,FieldImage
 			//Charismatic Cards
-			/*0*/ allCards.add(new Creature("Hank Hill", 1, 80, 1, 2,Type.Charasmatic, "CardImages//hankCard.png", "FieldImages//hankField.png"));
+			/*0*/ allCards.add(new Creature("Hank Hill", 2, 80, 1, 2,Type.Charasmatic, "CardImages//hankCard.png", "FieldImages//hankField.png"));
 			/*1*/ allCards.add(new Creature("Billy Mays", 2, 90, 4, 2, Type.Charasmatic, "CardImages//billyCard.png", "FieldImages//BillyMaysField.png"));
 			/*2*/ allCards.add(new Creature("Esteban Winsmore", 3, 90, 5, 3, Type.Charasmatic, "CardImages//EstebanCard.png", "FieldImages//EstebanField.png"));
 			/*3*/ allCards.add(new Creature("Handsome Squidward", 5, 75, 5, 5, Type.Charasmatic, "CardImages//HsquidCard.png", "FieldImages//handsomeSquidwardField.png"));
@@ -26,7 +26,7 @@ public class AllCards {
 			/*8*/ allCards.add(new Creature("Adam Jensen", 4, 95, 3, 4, Type.Fighter, "CardImages//adamCard.png", "FieldImages//adamField.png"));
 			/*9*/ allCards.add(new Creature("Salty Bouncer", 5, 85, 6, 4, Type.Fighter, "CardImages//saltyCard.png", "FieldImages//saltyField.png"));
 			/*10*/ allCards.add(new Creature("Sanic", 5, 75, 6, 6, Type.Fighter, "CardImages//sanicCard.png", "FieldImages//sanicField.png"));
-			/*11*/ allCards.add(new RareCreature("The Regginator", 8, 85, 7, 9, Type.Fighter, "CardImages//regginatorCard.png", "FieldImages//regginatorField.png"));
+			/*11*/ allCards.add(new RareCreature("The Regginator", 7, 85, 7, 9, Type.Fighter, "CardImages//regginatorCard.png", "FieldImages//regginatorField.png"));
 			
 			//Genius Cards
 			/*12*/ allCards.add(new Creature("Walter White", 3, 85, 3, 4, Type.Genius, "CardImages//waltCard.png", "FieldImages//waltField.png"));
@@ -42,10 +42,10 @@ public class AllCards {
 			/*20*/ allCards.add(new RareCreature("Snoop Dogg", 4, 20, 4, 20, Type.Magic, "CardImages//snoopDoggCard.png", "FieldImages//snoopDoggField.png"));
 			/*21*/ allCards.add(new Creature("Mr. Meeseeks", 5, 100, 5, 7, Type.Magic, "CardImages//mrMeeSeeksCard.png", "FieldImages//mrMeeseeksField.png"));
 			/*22*/ allCards.add(new Creature("Cromulon", 7,  95, 6, 7,Type.Magic, "CardImages//cromulonCard.png", "FieldImages//CromulonField.png"));
-			/*23*/ allCards.add(new RareCreature("Bob Ross", 8, 80, 9, 9, Type.Magic, "CardImages//bobrossCard.png", "FieldImages//bobRossField.png"));
+			/*23*/ allCards.add(new RareCreature("Bob Ross", 7, 80, 9, 9, Type.Magic, "CardImages//bobrossCard.png", "FieldImages//bobRossField.png"));
 			
 			//Psycho Cards
-			/*24*/ allCards.add(new Creature("Blue Eyes Orange Orange", 1, 40, 6, 2,Type.Psycho, "CardImages//OrangeOrangeCard.png", "FieldImages//OrangeOrange.png"));
+			/*24*/ allCards.add(new Creature("Blue Eyes Orange Orange", 2, 40, 6, 2,Type.Psycho, "CardImages//OrangeOrangeCard.png", "FieldImages//OrangeOrange.png"));
 			/*25*/ allCards.add(new Creature("Old Timer", 2, 85, 2, 4, Type.Psycho, "CardImages//oldTimerCard.png", "FieldImages//oldTimerField.png"));
 			/*26*/ allCards.add(new RareCreature("Kim Jong Un", 4, 50, 7, 5, Type.Psycho, "CardImages//kimJongUnCard.png", "FieldImages//kimJongUnField.png"));
 			/*27*/ allCards.add(new Creature("Brian Peppers", 4, 75, 6, 5, Type.Psycho, "CardImages//brianPepsCard.png", "FieldImages//brianPepsField.png"));
@@ -53,7 +53,7 @@ public class AllCards {
 			/*29*/ allCards.add(new RareCreature("Freaky Fred", 7, 85, 6, 8, Type.Psycho, "CardImages//FreakyFredCard.png", "FieldImages//freakyFredField.png"));
 			
 			//Spooky Cards
-			/*30*/ allCards.add(new Creature("Count Chocula", 1, 85, 2, 1, Type.Spooky, "CardImages//countChocCard.png", "FieldImages//countchocfield.png"));
+			/*30*/ allCards.add(new Creature("Count Chocula", 2, 85, 2, 1, Type.Spooky, "CardImages//countChocCard.png", "FieldImages//countchocfield.png"));
 			/*31*/ allCards.add(new Creature("Spooky Police", 2, 75, 3, 2,Type.Spooky, "CardImages//spookyPoliceCard.png", "FieldImages//spookyPoliceField.png"));
 			/*32*/ allCards.add(new RareCreature("Mr. Bones", 3, 95, 1, 10 ,Type.Spooky, "CardImages//MrBonesCard.png", "FieldImages//mrbonesField.png"));
 			/*33*/ allCards.add(new Creature("King Ramsee", 3, 80, 4, 4,Type.Spooky, "CardImages//KingRamsesCard.png", "FieldImages//kingramsesField.png"));

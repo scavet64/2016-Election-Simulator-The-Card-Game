@@ -34,6 +34,10 @@ public class UserProfile implements Serializable {
 		playerImagePath = "images//defaultPlayer.png";
 		setFirstLoad(true);
 	}
+	
+	public UserProfile(){
+		
+	}
 
 	/**
 	 * @return stringOfCardsOwned collection of cards player has opened

@@ -13,6 +13,10 @@ public class JackCard extends RareCreature {
 		this.pieceNumber = pieceNumber;
 		// TODO Auto-generated constructor stub
 	}
+	
+	public JackCard(){
+		
+	}
 
 	/**
 	 * Deep copy constructor for the god card Jack

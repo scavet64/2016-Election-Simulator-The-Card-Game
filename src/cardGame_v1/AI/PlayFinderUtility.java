@@ -2,8 +2,15 @@ package cardGame_v1.AI;
 
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
+import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
+import java.util.UUID;
+
+import com.esotericsoftware.kryo.Kryo;
+import com.esotericsoftware.kryo.io.Input;
+import com.esotericsoftware.kryo.io.Output;
+import com.rits.cloning.Cloner;
 
 import cardGame_v1.Controller.Game;
 import cardGame_v1.Controller.Player;
@@ -22,52 +29,91 @@ public class PlayFinderUtility {
 
 	public static final int MAX = 0;
 	public static final int MIN = 1;
-
-	/**
-	 * Save a copy of the game before the AI experiments with the game state
-	 */
-	public static boolean serializeCurrentGameState(Game game){
-		boolean didSave;
+	
+	public static void kryoSerializeCurrentGameState(Game game){
+		Kryo kryo = new Kryo();
+		
 		if(saveCount > 20){
 			throw new RuntimeException("Exceeded 20 stacked save states");
 		}
-		try(ObjectOutputStream gameOutputStream = new ObjectOutputStream(new FileOutputStream(TEMP_GAME_FILE_NAME + saveCount + ".ser"))) {
-			gameOutputStream.writeObject(game);
-			System.out.println("PLAYFINDERUTILITY: saved " + saveCount); //TODO
+		try{
+			Output output = new Output(new FileOutputStream(TEMP_GAME_FILE_NAME + saveCount + ".ser"));
+		    kryo.writeObject(output, game);
+		    output.close();
+			//System.out.println("PLAYFINDERUTILITY: saved " + saveCount); //TODO
 			saveCount++;
-			didSave = true;
-		} catch (Exception e) {
+			output.close();
+		} catch (Exception e){
 			e.printStackTrace();
-			didSave = false;
 		}
-		return didSave;
 	}
 	
-	public static void serializeCurrentGameState(Game game2, String filename){
-		//boolean didSave;
-		try(ObjectOutputStream gameOutputStream = new ObjectOutputStream(new FileOutputStream(filename))) {
-			gameOutputStream.writeObject(game2);
-			//saveCount++;
-			//didSave = true;
-		} catch (Exception e) {
-			e.printStackTrace();
-			//didSave = false;
+	//	public static void serializeCurrentGameState(Game game2, String filename){
+	//		//boolean didSave;
+	//		try(ObjectOutputStream gameOutputStream = new ObjectOutputStream(new FileOutputStream(filename))) {
+	//			gameOutputStream.writeObject(game2);
+	//			//saveCount++;
+	//			//didSave = true;
+	//		} catch (Exception e) {
+	//			e.printStackTrace();
+	//			//didSave = false;
+	//		}
+	//		//return didSave;
+	//	}
+		
+//		/**
+//		 * Reload the saved game back into memory.
+//		 */
+//		public static Game loadTempGame(String filename){
+//			try(ObjectInputStream ois = new ObjectInputStream(new FileInputStream(filename))) {
+//				game = (Game) ois.readObject();
+//				//saveCount--;
+//			} catch (Exception e) {
+//				e.printStackTrace();
+//			}
+//			return game;
+//		}
+
+	public static Game kryoLoadGameState(){
+			Kryo kryo = new Kryo();
+			
+			try {
+				Input input = new Input(new FileInputStream(TEMP_GAME_FILE_NAME + (saveCount-1) + ".ser"));
+				game = (Game) kryo.readObject(input, Game.class);
+				//System.out.println("PLAYFINDERUTILITY: restored " + (saveCount-1)); //TODO
+				saveCount--;
+				input.close();
+			} catch (Exception e) {
+				e.printStackTrace();
+			}
+			return game;
 		}
-		//return didSave;
-	}
-	
+
 	/**
-	 * Reload the saved game back into memory.
+	 * returns a deep copy of the passed in game
+	 * @param game
+	 * @return
 	 */
-	public static Game loadTempGame(String filename){
-		try(ObjectInputStream ois = new ObjectInputStream(new FileInputStream(filename))) {
-			game = (Game) ois.readObject();
-			//saveCount--;
-		} catch (Exception e) {
-			e.printStackTrace();
-		}
-		return game;
+	public static Game getDeepCopyGame(Game game){
+		Cloner cloner = new Cloner();
+		Game gameCopy = cloner.deepClone(game);
+		return gameCopy;
 	}
+	
+	
+	
+//	public static void serializeCurrentGameState(Game game2, String filename){
+//		//boolean didSave;
+//		try(ObjectOutputStream gameOutputStream = new ObjectOutputStream(new FileOutputStream(filename))) {
+//			gameOutputStream.writeObject(game2);
+//			//saveCount++;
+//			//didSave = true;
+//		} catch (Exception e) {
+//			e.printStackTrace();
+//			//didSave = false;
+//		}
+//		//return didSave;
+//	}
 	
 	/**
 	 * Returns the chance of occurrence for the passed in move and playoutcome.
@@ -120,23 +166,23 @@ public class PlayFinderUtility {
 		return chanceToOccur;
 	}
 
-	/**
-	 * Reload the saved game back into memory.
-	 */
-	public static Game loadTempGame(){
-		try(ObjectInputStream ois = new ObjectInputStream(new FileInputStream(TEMP_GAME_FILE_NAME + (saveCount-1) + ".ser"))) {
-			game = (Game) ois.readObject();
-			System.out.println("PLAYFINDERUTILITY: restored " + (saveCount-1)); //TODO
-			saveCount--;
-		} catch (Exception e) {
-			e.printStackTrace();
-		}
-		return game;
-	}
-	
-	public static Game getGame(){
-		return game;
-	}
+//	/**
+//	 * Reload the saved game back into memory.
+//	 */
+//	public static Game loadTempGame(){
+//		try(ObjectInputStream ois = new ObjectInputStream(new FileInputStream(TEMP_GAME_FILE_NAME + (saveCount-1) + ".ser"))) {
+//			game = (Game) ois.readObject();
+//			System.out.println("PLAYFINDERUTILITY: restored " + (saveCount-1)); //TODO
+//			saveCount--;
+//		} catch (Exception e) {
+//			e.printStackTrace();
+//		}
+//		return game;
+//	}
+//	
+//	public static Game getGame(){
+//		return game;
+//	}
 
 	/**
 	 * A utility method to parse through all possible plays at a given game state. Uses a static flag in this class to either
@@ -154,7 +200,7 @@ public class PlayFinderUtility {
 				if(!game.getCurrentPlayer().isFieldFull() && game.getCurrentPlayer().canPlay(card)) {
 					tempPlay = new Play(new Move(("hand " + i + " " + game.getCurrentPlayer().getPlayerStringSide()).split(" "), 
 							availableFieldPosition(game.getCurrentPlayer()), MoveCase.PlayCard), game);
-					System.out.println("PLAYFINDERUTILITY: Found a hand play"); //TODO
+					//System.out.println("PLAYFINDERUTILITY: Found a hand play"); //TODO
 					//*****************************************************//
 					Object[] result = valueCompare(tempPlay, bestPlay, game);
 					bestPlay = (Play) result[0];
@@ -170,7 +216,7 @@ public class PlayFinderUtility {
 							String[] secondCardPosition = ("field " + j + " " + 
 									game.getCurrentPlayer().getPlayerStringSide()).split(" ");
 						
-							System.out.println("PLAYFINDERUTILITY: Found an enhancement play, ai field"); //TODO
+							//System.out.println("PLAYFINDERUTILITY: Found an enhancement play, ai field"); //TODO
 							tempPlay = new Play(new Move(("hand " + i + " " + game.getCurrentPlayer().getPlayerStringSide()).split(" "), 
 									secondCardPosition, MoveCase.PlayCard ), game);
 							
@@ -189,7 +235,7 @@ public class PlayFinderUtility {
 						
 							tempPlay = new Play(new Move(("hand " + i + " " + game.getCurrentPlayer().getPlayerStringSide()).split(" "), 
 									secondCardPosition, MoveCase.PlayCard ), game);
-							System.out.println("PLAYFINDERUTILITY: Found an enhancement play, player field"); //TODO
+							//System.out.println("PLAYFINDERUTILITY: Found an enhancement play, player field"); //TODO
 							//*****************************************************//
 							Object[] result = valueCompare(tempPlay, bestPlay, game);
 							bestPlay = (Play) result[0];
@@ -209,7 +255,7 @@ public class PlayFinderUtility {
 					if(game.getCurrentPlayer().getField().get(game.getOpposingPlayer().getPlayerSide()).size() == 0) {
 						tempPlay = new Play(new Move(("field " + i + " " + game.getCurrentPlayer().getPlayerStringSide()).split(" "), 
 								                     ("player " + 0 + " " + game.getOpposingPlayer().getPlayerStringSide()).split(" "), MoveCase.AttackPlayer), game);
-						System.out.println("PLAYFINDERUTILITY: Found a field play, attacking player"); //TODO
+						//System.out.println("PLAYFINDERUTILITY: Found a field play, attacking player"); //TODO
 						//*****************************************************//
 						Object[] result = valueCompare(tempPlay, bestPlay, game);
 						bestPlay = (Play) result[0];
@@ -220,7 +266,7 @@ public class PlayFinderUtility {
 							if(attackedCreature != null) {
 								tempPlay = new Play(new Move(("field " + i + " " + game.getCurrentPlayer().getPlayerStringSide()).split(" "), 
 					                     ("field " + n + " " + game.getOpposingPlayer().getPlayerStringSide()).split(" "), MoveCase.AttackCard), game);
-								System.out.println("PLAYFINDERUTILITY: Found a field play, attacking card"); //TODO
+								//System.out.println("PLAYFINDERUTILITY: Found a field play, attacking card"); //TODO
 								//*****************************************************//
 								Object[] result = valueCompare(tempPlay, bestPlay, game);
 								bestPlay = (Play) result[0];
@@ -250,17 +296,17 @@ public class PlayFinderUtility {
 			double bestValue = tempPlayReturn.getValue();
 			game = tempPlayReturn.getUpdatedGame();
 			if(valueFlag == MAX){
-				System.out.println("PLAYFINDERUTILITY: MAX was set, comparing"); //TODO
+				//System.out.println("PLAYFINDERUTILITY: MAX was set, comparing"); //TODO
 				if(tempValue > bestValue) {
 					bestPlay = tempPlay;
 				}
 			}else {
-				System.out.println("PLAYFINDERUTILITY: MIN was set, comparing"); //TODO
+				//System.out.println("PLAYFINDERUTILITY: MIN was set, comparing"); //TODO
 				if(tempValue < bestValue) {
 					bestPlay = tempPlay;
 				}
 			}
-			System.out.println("PLAYFINDERUTILITY: Better play value = " + bestPlay.getValue(game).getValue()); //TODO
+			//System.out.println("PLAYFINDERUTILITY: Better play value = " + bestPlay.getValue(game).getValue()); //TODO
 		}
 		Object[] result = new Object[2];
 		result[0] = bestPlay;
